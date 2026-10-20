@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>结构对比 - DBridge 帮助文档</title>
+
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  background: #f5f5f5;
+  color: #262626;
+  line-height: 1.7;
+  font-size: 15px;
+}
+
+.topbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 56px;
+  background: #fff;
+  border-bottom: 1px solid #e8e8e8;
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+  z-index: 100;
+}
+
+.topbar-logo {
+  font-size: 16px;
+  font-weight: 600;
+  color: #262626;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.topbar-logo .logo-icon {
+  width: 28px;
+  height: 28px;
+  background: linear-gradient(135deg, #00b96b, #00d68f);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.topbar-subtitle {
+  font-size: 13px;
+  color: #8c8c8c;
+  margin-left: 12px;
+  padding-left: 12px;
+  border-left: 1px solid #e8e8e8;
+}
+
+.layout {
+  display: flex;
+  margin-top: 56px;
+  min-height: calc(100vh - 56px);
+}
+
+.sidebar {
+  position: fixed;
+  top: 56px;
+  left: 0;
+  width: 260px;
+  height: calc(100vh - 56px);
+  background: #fff;
+  border-right: 1px solid #e8e8e8;
+  overflow-y: auto;
+  padding: 16px 0;
+}
+
+.sidebar::-webkit-scrollbar { width: 4px; }
+.sidebar::-webkit-scrollbar-thumb { background: #d9d9d9; border-radius: 2px; }
+
+.sidebar-section { margin-bottom: 8px; }
+
+.sidebar-section-title {
+  padding: 8px 20px 4px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #8c8c8c;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.sidebar-nav { list-style: none; }
+
+.sidebar-nav li a {
+  display: block;
+  padding: 6px 20px 6px 24px;
+  color: #595959;
+  text-decoration: none;
+  font-size: 14px;
+  line-height: 1.6;
+  transition: all 0.15s;
+  border-left: 3px solid transparent;
+}
+
+.sidebar-nav li a:hover {
+  color: #00b96b;
+  background: #f6ffed;
+}
+
+.sidebar-nav li.active a {
+  color: #00b96b;
+  background: #f6ffed;
+  border-left-color: #00b96b;
+  font-weight: 500;
+}
+
+.main {
+  margin-left: 260px;
+  flex: 1;
+  min-width: 0;
+}
+
+.content-wrapper {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 48px 64px 80px;
+}
+
+.content { background: #fff; padding: 40px 48px; border-radius: 8px; }
+
+.content h1 {
+  font-size: 28px;
+  font-weight: 600;
+  color: #262626;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.content h2 {
+  font-size: 22px;
+  font-weight: 600;
+  color: #262626;
+  margin-top: 40px;
+  margin-bottom: 16px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.content h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #262626;
+  margin-top: 32px;
+  margin-bottom: 12px;
+}
+
+.content h4 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #262626;
+  margin-top: 24px;
+  margin-bottom: 8px;
+}
+
+.content p {
+  margin-bottom: 16px;
+  color: #434343;
+}
+
+.content a {
+  color: #00b96b;
+  text-decoration: none;
+}
+
+.content a:hover { text-decoration: underline; }
+
+.content ul, .content ol {
+  margin-bottom: 16px;
+  padding-left: 24px;
+}
+
+.content li {
+  margin-bottom: 6px;
+  color: #434343;
+}
+
+.content blockquote {
+  margin: 16px 0;
+  padding: 12px 16px;
+  background: #f6ffed;
+  border-left: 4px solid #00b96b;
+  border-radius: 0 4px 4px 0;
+  color: #595959;
+}
+
+.content blockquote p { margin-bottom: 0; }
+
+.content code {
+  background: #f5f5f5;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 13px;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  color: #d4380d;
+}
+
+.content pre {
+  margin: 16px 0;
+  padding: 16px 20px;
+  background: #1e1e1e;
+  border-radius: 8px;
+  overflow-x: auto;
+  line-height: 1.6;
+}
+
+.content pre code {
+  background: none;
+  padding: 0;
+  color: #d4d4d4;
+  font-size: 13px;
+}
+
+.content table {
+  width: 100%;
+  margin: 16px 0;
+  border-collapse: collapse;
+  border: 1px solid #e8e8e8;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.content thead th {
+  background: #fafafa;
+  padding: 10px 14px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 14px;
+  color: #262626;
+  border-bottom: 1px solid #e8e8e8;
+}
+
+.content tbody td {
+  padding: 10px 14px;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 14px;
+  color: #434343;
+}
+
+.content tbody tr:last-child td { border-bottom: none; }
+
+.content tbody tr:nth-child(even) { background: #fafafa; }
+
+.content img {
+  max-width: 100%;
+  border-radius: 6px;
+  margin: 16px 0;
+}
+
+.content hr {
+  border: none;
+  border-top: 1px solid #f0f0f0;
+  margin: 32px 0;
+}
+
+.page-nav {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 48px;
+  padding-top: 24px;
+  border-top: 1px solid #f0f0f0;
+  gap: 16px;
+}
+
+.page-nav a {
+  display: flex;
+  flex-direction: column;
+  padding: 12px 20px;
+  border: 1px solid #e8e8e8;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: all 0.15s;
+  min-width: 0;
+  max-width: 48%;
+}
+
+.page-nav a:hover {
+  border-color: #00b96b;
+  background: #f6ffed;
+  text-decoration: none;
+}
+
+.page-nav .prev { align-items: flex-start; }
+.page-nav .next { align-items: flex-end; margin-left: auto; }
+
+.nav-label {
+  font-size: 12px;
+  color: #8c8c8c;
+  margin-bottom: 4px;
+}
+
+.nav-title {
+  font-size: 14px;
+  color: #00b96b;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+@media (max-width: 768px) {
+  .sidebar { display: none; }
+  .main { margin-left: 0; }
+  .content-wrapper { padding: 24px 16px 60px; }
+  .content h1 { font-size: 24px; }
+  .content h2 { font-size: 20px; }
+}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="topbar-logo">
+    <span class="logo-icon">D</span>
+    <span>DBridge 帮助文档</span>
+  </div>
+  <span class="topbar-subtitle">结构对比</span>
+</div>
+<div class="layout">
+  <aside class="sidebar">
+    <div class="sidebar-section"><div class="sidebar-section-title">功能介绍</div><ul class="sidebar-nav"><li><a href="00-preface.html">DBridge Pro 产品概述</a></li><li><a href="01-quick-start.html">快速开始</a></li><li><a href="02-dashboard.html">仪表盘</a></li><li><a href="03-datasource.html">数据源管理</a></li><li><a href="04-sql-editor.html">SQL 编辑器与数据查询</a></li><li><a href="05-database-management.html">数据库管理</a></li><li class="active"><a href="06-structure-compare.html">结构对比</a></li><li><a href="07-data-sync.html">数据同步</a></li><li><a href="08-export-import.html">导出与导入</a></li><li><a href="09-sql-transpile.html">SQL 方言转换</a></li><li><a href="10-script-management.html">脚本管理</a></li><li><a href="11-report.html">报表面板</a></li><li><a href="12-ai-assistant.html">AI 助手</a></li><li><a href="13-agent.html">Agent 管理</a></li><li><a href="14-skill.html">Skill 管理</a></li><li><a href="15-mcp-tools.html">MCP 工具</a></li><li><a href="16-ai-provider.html">AI Provider 管理</a></li><li><a href="17-semantic-layer.html">语义层</a></li><li><a href="18-slow-sql.html">慢 SQL 监控</a></li><li><a href="19-inspection.html">数据库巡检</a></li><li><a href="20-server-management.html">服务器管理</a></li><li><a href="21-audit-log.html">审计日志</a></li><li><a href="22-ai-security.html">AI 安全</a></li><li><a href="23-file-storage.html">文件与存储管理</a></li><li><a href="24-im-bot.html">IM 机器人</a></li><li><a href="25-authentication.html">认证与订阅</a></li><li><a href="26-license.html">许可证管理</a></li><li><a href="27-settings.html">系统设置</a></li><li><a href="28-deployment.html">部署指南</a></li></ul></div><div class="sidebar-section"><div class="sidebar-section-title">技术文档</div><ul class="sidebar-nav"><li><a href="agent-memory-system.html">DBridge Agent 记忆系统详解</a></li><li><a href="semantic-engine-guide.html">DBridge 语义引擎与语义模型</a></li></ul></div>
+  </aside>
+  <main class="main">
+    <div class="content-wrapper">
+      <article class="content">
+        <h1>结构对比</h1>
+<p>结构对比功能用于比较两个数据源之间的数据库结构差异，并提供可视化的差异展示和一键同步能力。</p>
+<h2>功能概述</h2>
+<ul>
+<li>跨库结构对比（支持 MySQL、PostgreSQL、Oracle、SQL Server、SQLite 之间互比）</li>
+<li>差异可视化（仅源库有 / 仅目标库有 / 两端都有）</li>
+<li>列级结构对比</li>
+<li>DDL 语句对比</li>
+<li>结构同步（DDL 预览 → 编辑 → 执行）</li>
+<li>数据对比与同步</li>
+</ul>
+<h2>页面布局</h2>
+<pre><code>┌─────────────────────────────────────────────────────┐
+│  源数据源: [选择]  数据库: [选择]   ⇄   目标数据源: [选择]  数据库: [选择]  │
+│                                    [对比]            │
+├──────────────┬──────────────────────────────────────┤
+│  对象列表     │  详情面板                             │
+│              │  [数据] [结构] [DDL]                   │
+│  🔍 搜索     │                                      │
+│              │  ┌──────────┬──────────┐              │
+│  ✅ users    │  │ 源库数据  │ 目标库数据 │              │
+│  ⚠️ orders   │  │          │          │              │
+│  🔵 products │  └──────────┴──────────┘              │
+│              │                                      │
+│              │  [同步结构]  [同步数据]                  │
+└──────────────┴──────────────────────────────────────┘
+</code></pre>
+<h2>操作步骤</h2>
+<h3>1. 选择数据源</h3>
+<ul>
+<li><strong>源数据源</strong> — 选择左侧对比的数据库</li>
+<li><strong>目标数据源</strong> — 选择右侧对比的数据库</li>
+<li>分别选择对应的数据库/Schema</li>
+</ul>
+<blockquote>
+<p>对于两级数据库（PostgreSQL、SQL Server），需要分别选择数据库和 Schema。
+对于单级数据库（MySQL、Oracle），只需选择数据库。</p>
+</blockquote>
+<h3>2. 执行对比</h3>
+<p>点击 <strong>「对比」</strong> 按钮，系统分别连接两个数据库，查询 <code>information_schema</code> 获取表/视图元数据，计算差异。</p>
+<h3>3. 查看差异</h3>
+<p>对比完成后，左侧对象列表展示结果：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">图标</th>
+<th style="text-align:left">含义</th>
+<th style="text-align:left">说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">✅ 绿色</td>
+<td style="text-align:left">两端都有</td>
+<td style="text-align:left">表/视图在源库和目标库都存在</td>
+</tr>
+<tr>
+<td style="text-align:left">⚠️ 橙色</td>
+<td style="text-align:left">仅源库有</td>
+<td style="text-align:left">表/视图只在源库存在，目标库缺失</td>
+</tr>
+<tr>
+<td style="text-align:left">🔵 蓝色</td>
+<td style="text-align:left">仅目标库有</td>
+<td style="text-align:left">表/视图只在目标库存在</td>
+</tr>
+</tbody>
+</table>
+<p>点击对象名，右侧展示详细信息。</p>
+<h3>4. 查看详情</h3>
+<p>右侧详情面板有三个标签页：</p>
+<h4>数据标签页</h4>
+<p>左右并排展示源库和目标库的表数据：</p>
+<ul>
+<li>支持分页浏览</li>
+<li>源库数据表有 Checkbox 列，可选中行</li>
+<li>用于数据级对比</li>
+</ul>
+<h4>结构标签页</h4>
+<p>列级结构对比：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">列</th>
+<th style="text-align:left">说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">列名</td>
+<td style="text-align:left">字段名称</td>
+</tr>
+<tr>
+<td style="text-align:left">源库类型</td>
+<td style="text-align:left">源库中的数据类型</td>
+</tr>
+<tr>
+<td style="text-align:left">目标库类型</td>
+<td style="text-align:left">目标库中的数据类型</td>
+</tr>
+<tr>
+<td style="text-align:left">差异</td>
+<td style="text-align:left">高亮显示差异项（黄色背景）</td>
+</tr>
+</tbody>
+</table>
+<p>差异类型包括：</p>
+<ul>
+<li>类型不同（如 varchar(50) vs varchar(100)）</li>
+<li>可空性不同</li>
+<li>默认值不同</li>
+<li>注释不同</li>
+</ul>
+<h4>DDL 标签页</h4>
+<p>展示源库和目标库的建表 DDL 语句，方便对比。</p>
+<h3>5. 交换源/目标</h3>
+<p>点击 <strong>⇄</strong> 按钮，快速交换源数据源和目标数据源。</p>
+<h3>6. 对比历史</h3>
+<p>系统记录最近 5 次对比历史（存储在浏览器 localStorage），可快速回顾之前的对比结果。</p>
+<h2>结构同步</h2>
+<p>当发现结构差异后，可以直接同步：</p>
+<h3>同步流程（两步式）</h3>
+<ol>
+<li><strong>预览</strong> — 点击「同步结构」，系统生成 DDL 语句</li>
+<li><strong>编辑</strong> — 在弹出的文本框中查看/编辑 DDL</li>
+<li><strong>执行</strong> — 确认后执行 DDL 到目标库</li>
+</ol>
+<h3>同步动作</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">动作</th>
+<th style="text-align:left">场景</th>
+<th style="text-align:left">生成的 DDL</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">create</td>
+<td style="text-align:left">目标库无此表</td>
+<td style="text-align:left">CREATE TABLE（适配目标库方言）</td>
+</tr>
+<tr>
+<td style="text-align:left">alter</td>
+<td style="text-align:left">目标库有此表但结构不同</td>
+<td style="text-align:left">ALTER TABLE ADD/MODIFY COLUMN</td>
+</tr>
+</tbody>
+</table>
+<h3>DDL 预览</h3>
+<p>系统自动生成的 DDL 可以在执行前编辑：</p>
+<ul>
+<li>修改列定义</li>
+<li>添加额外语句</li>
+<li>删除不需要的变更</li>
+</ul>
+<blockquote>
+<p>建议仔细检查 DDL 后再执行，特别是生产环境。</p>
+</blockquote>
+<h2>数据同步</h2>
+<p>除了结构同步，还支持数据同步：</p>
+<h3>同步模式</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">模式</th>
+<th style="text-align:left">说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">全量同步</td>
+<td style="text-align:left">将源表全部数据写入目标表</td>
+</tr>
+<tr>
+<td style="text-align:left">选中行同步</td>
+<td style="text-align:left">仅同步在数据对比中选中的行</td>
+</tr>
+<tr>
+<td style="text-align:left">行差异同步</td>
+<td style="text-align:left">按指定字段对比，仅同步有差异的行</td>
+</tr>
+</tbody>
+</table>
+<h3>同步选项</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">选项</th>
+<th style="text-align:left">说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">清空目标表</td>
+<td style="text-align:left">同步前先 TRUNCATE 目标表</td>
+</tr>
+<tr>
+<td style="text-align:left">同步 ID 字段</td>
+<td style="text-align:left">是否同步自增主键列</td>
+</tr>
+<tr>
+<td style="text-align:left">同步指定列</td>
+<td style="text-align:left">仅同步选定的列（Transfer 组件选择）</td>
+</tr>
+<tr>
+<td style="text-align:left">检查字段</td>
+<td style="text-align:left">行差异同步时用于对比的字段列表</td>
+</tr>
+</tbody>
+</table>
+<h3>同步策略</h3>
+<ul>
+<li>重复键自动跳过（INSERT IGNORE / ON CONFLICT DO NOTHING）</li>
+<li>事务执行，失败整表回滚</li>
+<li>同步数据自动归档为 CSV 文件</li>
+<li>操作写入审计日志</li>
+</ul>
+<h2>支持的跨库对比</h2>
+<p>结构对比支持以下任意两种数据库之间的对比：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">源库</th>
+<th style="text-align:left">目标库</th>
+<th style="text-align:left">说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">MySQL</td>
+<td style="text-align:left">PostgreSQL</td>
+<td style="text-align:left">自动适配方言差异</td>
+</tr>
+<tr>
+<td style="text-align:left">MySQL</td>
+<td style="text-align:left">Oracle</td>
+<td style="text-align:left">类型映射转换</td>
+</tr>
+<tr>
+<td style="text-align:left">PostgreSQL</td>
+<td style="text-align:left">SQL Server</td>
+<td style="text-align:left">Schema 结构适配</td>
+</tr>
+<tr>
+<td style="text-align:left">Oracle</td>
+<td style="text-align:left">MySQL</td>
+<td style="text-align:left">数据类型转换</td>
+</tr>
+<tr>
+<td style="text-align:left">…</td>
+<td style="text-align:left">…</td>
+<td style="text-align:left">任意组合均支持</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>跨库对比时，系统会自动处理数据类型映射差异（如 MySQL 的 datetime vs PostgreSQL 的 timestamp）。</p>
+</blockquote>
+
+      </article>
+      <div class="page-nav"><a class="prev" href="05-database-management.html"><span class="nav-label">← 上一篇</span><span class="nav-title">数据库管理</span></a><a class="next" href="07-data-sync.html"><span class="nav-label">下一篇 →</span><span class="nav-title">数据同步</span></a></div>
+    </div>
+  </main>
+</div>
+</body>
+</html>

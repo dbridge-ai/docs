@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>数据库巡检 - DBridge 帮助文档</title>
+
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  background: #f5f5f5;
+  color: #262626;
+  line-height: 1.7;
+  font-size: 15px;
+}
+
+.topbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 56px;
+  background: #fff;
+  border-bottom: 1px solid #e8e8e8;
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+  z-index: 100;
+}
+
+.topbar-logo {
+  font-size: 16px;
+  font-weight: 600;
+  color: #262626;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.topbar-logo .logo-icon {
+  width: 28px;
+  height: 28px;
+  background: linear-gradient(135deg, #00b96b, #00d68f);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.topbar-subtitle {
+  font-size: 13px;
+  color: #8c8c8c;
+  margin-left: 12px;
+  padding-left: 12px;
+  border-left: 1px solid #e8e8e8;
+}
+
+.layout {
+  display: flex;
+  margin-top: 56px;
+  min-height: calc(100vh - 56px);
+}
+
+.sidebar {
+  position: fixed;
+  top: 56px;
+  left: 0;
+  width: 260px;
+  height: calc(100vh - 56px);
+  background: #fff;
+  border-right: 1px solid #e8e8e8;
+  overflow-y: auto;
+  padding: 16px 0;
+}
+
+.sidebar::-webkit-scrollbar { width: 4px; }
+.sidebar::-webkit-scrollbar-thumb { background: #d9d9d9; border-radius: 2px; }
+
+.sidebar-section { margin-bottom: 8px; }
+
+.sidebar-section-title {
+  padding: 8px 20px 4px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #8c8c8c;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.sidebar-nav { list-style: none; }
+
+.sidebar-nav li a {
+  display: block;
+  padding: 6px 20px 6px 24px;
+  color: #595959;
+  text-decoration: none;
+  font-size: 14px;
+  line-height: 1.6;
+  transition: all 0.15s;
+  border-left: 3px solid transparent;
+}
+
+.sidebar-nav li a:hover {
+  color: #00b96b;
+  background: #f6ffed;
+}
+
+.sidebar-nav li.active a {
+  color: #00b96b;
+  background: #f6ffed;
+  border-left-color: #00b96b;
+  font-weight: 500;
+}
+
+.main {
+  margin-left: 260px;
+  flex: 1;
+  min-width: 0;
+}
+
+.content-wrapper {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 48px 64px 80px;
+}
+
+.content { background: #fff; padding: 40px 48px; border-radius: 8px; }
+
+.content h1 {
+  font-size: 28px;
+  font-weight: 600;
+  color: #262626;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.content h2 {
+  font-size: 22px;
+  font-weight: 600;
+  color: #262626;
+  margin-top: 40px;
+  margin-bottom: 16px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.content h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #262626;
+  margin-top: 32px;
+  margin-bottom: 12px;
+}
+
+.content h4 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #262626;
+  margin-top: 24px;
+  margin-bottom: 8px;
+}
+
+.content p {
+  margin-bottom: 16px;
+  color: #434343;
+}
+
+.content a {
+  color: #00b96b;
+  text-decoration: none;
+}
+
+.content a:hover { text-decoration: underline; }
+
+.content ul, .content ol {
+  margin-bottom: 16px;
+  padding-left: 24px;
+}
+
+.content li {
+  margin-bottom: 6px;
+  color: #434343;
+}
+
+.content blockquote {
+  margin: 16px 0;
+  padding: 12px 16px;
+  background: #f6ffed;
+  border-left: 4px solid #00b96b;
+  border-radius: 0 4px 4px 0;
+  color: #595959;
+}
+
+.content blockquote p { margin-bottom: 0; }
+
+.content code {
+  background: #f5f5f5;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 13px;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  color: #d4380d;
+}
+
+.content pre {
+  margin: 16px 0;
+  padding: 16px 20px;
+  background: #1e1e1e;
+  border-radius: 8px;
+  overflow-x: auto;
+  line-height: 1.6;
+}
+
+.content pre code {
+  background: none;
+  padding: 0;
+  color: #d4d4d4;
+  font-size: 13px;
+}
+
+.content table {
+  width: 100%;
+  margin: 16px 0;
+  border-collapse: collapse;
+  border: 1px solid #e8e8e8;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.content thead th {
+  background: #fafafa;
+  padding: 10px 14px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 14px;
+  color: #262626;
+  border-bottom: 1px solid #e8e8e8;
+}
+
+.content tbody td {
+  padding: 10px 14px;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 14px;
+  color: #434343;
+}
+
+.content tbody tr:last-child td { border-bottom: none; }
+
+.content tbody tr:nth-child(even) { background: #fafafa; }
+
+.content img {
+  max-width: 100%;
+  border-radius: 6px;
+  margin: 16px 0;
+}
+
+.content hr {
+  border: none;
+  border-top: 1px solid #f0f0f0;
+  margin: 32px 0;
+}
+
+.page-nav {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 48px;
+  padding-top: 24px;
+  border-top: 1px solid #f0f0f0;
+  gap: 16px;
+}
+
+.page-nav a {
+  display: flex;
+  flex-direction: column;
+  padding: 12px 20px;
+  border: 1px solid #e8e8e8;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: all 0.15s;
+  min-width: 0;
+  max-width: 48%;
+}
+
+.page-nav a:hover {
+  border-color: #00b96b;
+  background: #f6ffed;
+  text-decoration: none;
+}
+
+.page-nav .prev { align-items: flex-start; }
+.page-nav .next { align-items: flex-end; margin-left: auto; }
+
+.nav-label {
+  font-size: 12px;
+  color: #8c8c8c;
+  margin-bottom: 4px;
+}
+
+.nav-title {
+  font-size: 14px;
+  color: #00b96b;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+@media (max-width: 768px) {
+  .sidebar { display: none; }
+  .main { margin-left: 0; }
+  .content-wrapper { padding: 24px 16px 60px; }
+  .content h1 { font-size: 24px; }
+  .content h2 { font-size: 20px; }
+}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="topbar-logo">
+    <span class="logo-icon">D</span>
+    <span>DBridge 帮助文档</span>
+  </div>
+  <span class="topbar-subtitle">数据库巡检</span>
+</div>
+<div class="layout">
+  <aside class="sidebar">
+    <div class="sidebar-section"><div class="sidebar-section-title">功能介绍</div><ul class="sidebar-nav"><li><a href="00-preface.html">DBridge Pro 产品概述</a></li><li><a href="01-quick-start.html">快速开始</a></li><li><a href="02-dashboard.html">仪表盘</a></li><li><a href="03-datasource.html">数据源管理</a></li><li><a href="04-sql-editor.html">SQL 编辑器与数据查询</a></li><li><a href="05-database-management.html">数据库管理</a></li><li><a href="06-structure-compare.html">结构对比</a></li><li><a href="07-data-sync.html">数据同步</a></li><li><a href="08-export-import.html">导出与导入</a></li><li><a href="09-sql-transpile.html">SQL 方言转换</a></li><li><a href="10-script-management.html">脚本管理</a></li><li><a href="11-report.html">报表面板</a></li><li><a href="12-ai-assistant.html">AI 助手</a></li><li><a href="13-agent.html">Agent 管理</a></li><li><a href="14-skill.html">Skill 管理</a></li><li><a href="15-mcp-tools.html">MCP 工具</a></li><li><a href="16-ai-provider.html">AI Provider 管理</a></li><li><a href="17-semantic-layer.html">语义层</a></li><li><a href="18-slow-sql.html">慢 SQL 监控</a></li><li class="active"><a href="19-inspection.html">数据库巡检</a></li><li><a href="20-server-management.html">服务器管理</a></li><li><a href="21-audit-log.html">审计日志</a></li><li><a href="22-ai-security.html">AI 安全</a></li><li><a href="23-file-storage.html">文件与存储管理</a></li><li><a href="24-im-bot.html">IM 机器人</a></li><li><a href="25-authentication.html">认证与订阅</a></li><li><a href="26-license.html">许可证管理</a></li><li><a href="27-settings.html">系统设置</a></li><li><a href="28-deployment.html">部署指南</a></li></ul></div><div class="sidebar-section"><div class="sidebar-section-title">技术文档</div><ul class="sidebar-nav"><li><a href="agent-memory-system.html">DBridge Agent 记忆系统详解</a></li><li><a href="semantic-engine-guide.html">DBridge 语义引擎与语义模型</a></li></ul></div>
+  </aside>
+  <main class="main">
+    <div class="content-wrapper">
+      <article class="content">
+        <h1>数据库巡检</h1>
+<h2>1. 功能概述</h2>
+<p>数据库巡检功能通过采集数据库服务器的运行指标，结合 AI 分析，生成全面的数据库健康检查报告。系统自动进行多轮指标采集，捕捉数据库在不同时刻的运行状态，然后由 AI 综合分析并给出优化建议。</p>
+<p><strong>核心能力</strong>：</p>
+<ul>
+<li>10 轮指标自动采集（每 10 秒一轮）</li>
+<li>多维度指标覆盖（连接、吞吐、缓存、锁、复制、存储）</li>
+<li>AI 智能分析诊断</li>
+<li>巡检报告历史管理</li>
+<li>报告详情查看与复制</li>
+</ul>
+<hr>
+<h2>2. 进入巡检</h2>
+<p>巡检功能集成在 <strong>服务器管理</strong> 中。操作步骤：</p>
+<ol>
+<li>进入 <strong>数据源管理</strong> 页面</li>
+<li>找到目标数据源，点击操作栏的 <strong>服务器管理</strong> 按钮</li>
+<li>在弹出的服务器管理窗口中，切换到 <strong>巡检</strong> 标签页</li>
+</ol>
+<hr>
+<h2>3. 增强巡检</h2>
+<h3>3.1 启动巡检</h3>
+<p>点击 <strong>增强巡检</strong> 按钮开始巡检流程。整个流程分为两个阶段：</p>
+<p><strong>阶段一：指标采集</strong></p>
+<p>系统自动进行 10 轮指标采集，每轮间隔 10 秒，总计约 100 秒。</p>
+<p>采集过程中：</p>
+<ul>
+<li>页面显示进度条，展示当前完成的轮次（如 <code>5/10 rounds</code>）</li>
+<li>底部提示剩余时间</li>
+<li>如果某轮采集失败，系统会自动重试（最多 3 次，指数退避）</li>
+</ul>
+<p><strong>阶段二：AI 分析</strong></p>
+<p>指标采集完成后，系统将指标数据和服务器信息发送给 AI 进行分析。AI 会：</p>
+<ul>
+<li>分析指标趋势变化</li>
+<li>识别异常指标</li>
+<li>诊断潜在问题</li>
+<li>给出优化建议</li>
+</ul>
+<p>分析过程中会显示阶段性提示（“正在诊断”、“正在生成报告”），整个过程可能需要 1-3 分钟。</p>
+<h3>3.2 取消采集</h3>
+<p>如果需要在采集过程中取消，点击正在进行的按钮（此时变为红色），即可终止采集。</p>
+<h3>3.3 采集的指标</h3>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>指标项</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>连接</td>
+<td>当前连接数、最大连接数、活跃查询数、等待锁连接数</td>
+</tr>
+<tr>
+<td>吞吐</td>
+<td>事务提交/回滚数、每秒查询数</td>
+</tr>
+<tr>
+<td>缓存</td>
+<td>缓冲命中率、脏页数</td>
+</tr>
+<tr>
+<td>锁</td>
+<td>锁总数、被阻塞数、死锁数</td>
+</tr>
+<tr>
+<td>复制</td>
+<td>复制延迟、复制状态</td>
+</tr>
+<tr>
+<td>存储</td>
+<td>数据库大小、表空间使用率</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>说明</strong>：不同数据库类型支持的指标项不同，系统会根据实际返回的数据自动调整。</p>
+</blockquote>
+<hr>
+<h2>4. 巡检报告列表</h2>
+<p>巡检完成后，报告会出现在下方的表格中。</p>
+<h3>4.1 列表字段</h3>
+<table>
+<thead>
+<tr>
+<th>列名</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>时间</td>
+<td>巡检执行时间</td>
+</tr>
+<tr>
+<td>状态</td>
+<td>巡检结果状态：ok（绿色）、warning（橙色）、critical/error（红色）</td>
+</tr>
+<tr>
+<td>摘要</td>
+<td>巡检结果的简要描述</td>
+</tr>
+<tr>
+<td>耗时</td>
+<td>巡检总耗时（含指标采集和 AI 分析）</td>
+</tr>
+<tr>
+<td>操作</td>
+<td>查看详情、删除</td>
+</tr>
+</tbody>
+</table>
+<h3>4.2 查看详情</h3>
+<p>点击 <strong>查看详情</strong> 按钮，弹出详情对话框，包含：</p>
+<ul>
+<li><strong>状态</strong>：巡检结果状态</li>
+<li><strong>时间</strong>：巡检执行时间</li>
+<li><strong>耗时</strong>：巡检总耗时</li>
+<li><strong>摘要</strong>：巡检结果简要描述</li>
+<li><strong>详细内容</strong>：AI 生成的完整巡检报告（Markdown 格式渲染）</li>
+</ul>
+<h3>4.3 复制报告</h3>
+<p>在详情对话框中，可以复制报告内容：</p>
+<ul>
+<li><strong>复制 Markdown</strong>：复制原始 Markdown 格式文本</li>
+<li><strong>复制纯文本</strong>：复制转换为纯文本后的内容（去除 Markdown 标记）</li>
+</ul>
+<hr>
+<h2>5. 删除报告</h2>
+<p>对于不需要的报告，可以点击 <strong>删除</strong> 按钮移除。删除前会弹出确认对话框。</p>
+<hr>
+<h2>6. 支持的数据库</h2>
+<table>
+<thead>
+<tr>
+<th>数据库</th>
+<th>指标采集</th>
+<th>AI 分析</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>MySQL</td>
+<td>支持</td>
+<td>支持</td>
+</tr>
+<tr>
+<td>PostgreSQL</td>
+<td>支持</td>
+<td>支持</td>
+</tr>
+<tr>
+<td>SQL Server</td>
+<td>支持</td>
+<td>支持</td>
+</tr>
+<tr>
+<td>Oracle</td>
+<td>支持</td>
+<td>支持</td>
+</tr>
+<tr>
+<td>SQLite</td>
+<td>有限支持</td>
+<td>支持</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2>7. 使用建议</h2>
+<ol>
+<li><strong>定期巡检</strong>：建议每天对核心数据库执行一次巡检</li>
+<li><strong>关注趋势</strong>：多次巡检报告可以对比，观察指标变化趋势</li>
+<li><strong>重视告警</strong>：如果巡检状态为 warning 或 critical，应尽快排查</li>
+<li><strong>结合慢 SQL</strong>：巡检发现性能问题后，配合慢 SQL 监控深入分析</li>
+<li><strong>保存报告</strong>：重要巡检报告建议复制保存，作为运维档案</li>
+</ol>
+
+      </article>
+      <div class="page-nav"><a class="prev" href="18-slow-sql.html"><span class="nav-label">← 上一篇</span><span class="nav-title">慢 SQL 监控</span></a><a class="next" href="20-server-management.html"><span class="nav-label">下一篇 →</span><span class="nav-title">服务器管理</span></a></div>
+    </div>
+  </main>
+</div>
+</body>
+</html>

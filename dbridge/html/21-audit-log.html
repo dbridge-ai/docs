@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>审计日志 - DBridge 帮助文档</title>
+
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  background: #f5f5f5;
+  color: #262626;
+  line-height: 1.7;
+  font-size: 15px;
+}
+
+.topbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 56px;
+  background: #fff;
+  border-bottom: 1px solid #e8e8e8;
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+  z-index: 100;
+}
+
+.topbar-logo {
+  font-size: 16px;
+  font-weight: 600;
+  color: #262626;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.topbar-logo .logo-icon {
+  width: 28px;
+  height: 28px;
+  background: linear-gradient(135deg, #00b96b, #00d68f);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.topbar-subtitle {
+  font-size: 13px;
+  color: #8c8c8c;
+  margin-left: 12px;
+  padding-left: 12px;
+  border-left: 1px solid #e8e8e8;
+}
+
+.layout {
+  display: flex;
+  margin-top: 56px;
+  min-height: calc(100vh - 56px);
+}
+
+.sidebar {
+  position: fixed;
+  top: 56px;
+  left: 0;
+  width: 260px;
+  height: calc(100vh - 56px);
+  background: #fff;
+  border-right: 1px solid #e8e8e8;
+  overflow-y: auto;
+  padding: 16px 0;
+}
+
+.sidebar::-webkit-scrollbar { width: 4px; }
+.sidebar::-webkit-scrollbar-thumb { background: #d9d9d9; border-radius: 2px; }
+
+.sidebar-section { margin-bottom: 8px; }
+
+.sidebar-section-title {
+  padding: 8px 20px 4px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #8c8c8c;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.sidebar-nav { list-style: none; }
+
+.sidebar-nav li a {
+  display: block;
+  padding: 6px 20px 6px 24px;
+  color: #595959;
+  text-decoration: none;
+  font-size: 14px;
+  line-height: 1.6;
+  transition: all 0.15s;
+  border-left: 3px solid transparent;
+}
+
+.sidebar-nav li a:hover {
+  color: #00b96b;
+  background: #f6ffed;
+}
+
+.sidebar-nav li.active a {
+  color: #00b96b;
+  background: #f6ffed;
+  border-left-color: #00b96b;
+  font-weight: 500;
+}
+
+.main {
+  margin-left: 260px;
+  flex: 1;
+  min-width: 0;
+}
+
+.content-wrapper {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 48px 64px 80px;
+}
+
+.content { background: #fff; padding: 40px 48px; border-radius: 8px; }
+
+.content h1 {
+  font-size: 28px;
+  font-weight: 600;
+  color: #262626;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.content h2 {
+  font-size: 22px;
+  font-weight: 600;
+  color: #262626;
+  margin-top: 40px;
+  margin-bottom: 16px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.content h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #262626;
+  margin-top: 32px;
+  margin-bottom: 12px;
+}
+
+.content h4 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #262626;
+  margin-top: 24px;
+  margin-bottom: 8px;
+}
+
+.content p {
+  margin-bottom: 16px;
+  color: #434343;
+}
+
+.content a {
+  color: #00b96b;
+  text-decoration: none;
+}
+
+.content a:hover { text-decoration: underline; }
+
+.content ul, .content ol {
+  margin-bottom: 16px;
+  padding-left: 24px;
+}
+
+.content li {
+  margin-bottom: 6px;
+  color: #434343;
+}
+
+.content blockquote {
+  margin: 16px 0;
+  padding: 12px 16px;
+  background: #f6ffed;
+  border-left: 4px solid #00b96b;
+  border-radius: 0 4px 4px 0;
+  color: #595959;
+}
+
+.content blockquote p { margin-bottom: 0; }
+
+.content code {
+  background: #f5f5f5;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 13px;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  color: #d4380d;
+}
+
+.content pre {
+  margin: 16px 0;
+  padding: 16px 20px;
+  background: #1e1e1e;
+  border-radius: 8px;
+  overflow-x: auto;
+  line-height: 1.6;
+}
+
+.content pre code {
+  background: none;
+  padding: 0;
+  color: #d4d4d4;
+  font-size: 13px;
+}
+
+.content table {
+  width: 100%;
+  margin: 16px 0;
+  border-collapse: collapse;
+  border: 1px solid #e8e8e8;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.content thead th {
+  background: #fafafa;
+  padding: 10px 14px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 14px;
+  color: #262626;
+  border-bottom: 1px solid #e8e8e8;
+}
+
+.content tbody td {
+  padding: 10px 14px;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 14px;
+  color: #434343;
+}
+
+.content tbody tr:last-child td { border-bottom: none; }
+
+.content tbody tr:nth-child(even) { background: #fafafa; }
+
+.content img {
+  max-width: 100%;
+  border-radius: 6px;
+  margin: 16px 0;
+}
+
+.content hr {
+  border: none;
+  border-top: 1px solid #f0f0f0;
+  margin: 32px 0;
+}
+
+.page-nav {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 48px;
+  padding-top: 24px;
+  border-top: 1px solid #f0f0f0;
+  gap: 16px;
+}
+
+.page-nav a {
+  display: flex;
+  flex-direction: column;
+  padding: 12px 20px;
+  border: 1px solid #e8e8e8;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: all 0.15s;
+  min-width: 0;
+  max-width: 48%;
+}
+
+.page-nav a:hover {
+  border-color: #00b96b;
+  background: #f6ffed;
+  text-decoration: none;
+}
+
+.page-nav .prev { align-items: flex-start; }
+.page-nav .next { align-items: flex-end; margin-left: auto; }
+
+.nav-label {
+  font-size: 12px;
+  color: #8c8c8c;
+  margin-bottom: 4px;
+}
+
+.nav-title {
+  font-size: 14px;
+  color: #00b96b;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+@media (max-width: 768px) {
+  .sidebar { display: none; }
+  .main { margin-left: 0; }
+  .content-wrapper { padding: 24px 16px 60px; }
+  .content h1 { font-size: 24px; }
+  .content h2 { font-size: 20px; }
+}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="topbar-logo">
+    <span class="logo-icon">D</span>
+    <span>DBridge 帮助文档</span>
+  </div>
+  <span class="topbar-subtitle">审计日志</span>
+</div>
+<div class="layout">
+  <aside class="sidebar">
+    <div class="sidebar-section"><div class="sidebar-section-title">功能介绍</div><ul class="sidebar-nav"><li><a href="00-preface.html">DBridge Pro 产品概述</a></li><li><a href="01-quick-start.html">快速开始</a></li><li><a href="02-dashboard.html">仪表盘</a></li><li><a href="03-datasource.html">数据源管理</a></li><li><a href="04-sql-editor.html">SQL 编辑器与数据查询</a></li><li><a href="05-database-management.html">数据库管理</a></li><li><a href="06-structure-compare.html">结构对比</a></li><li><a href="07-data-sync.html">数据同步</a></li><li><a href="08-export-import.html">导出与导入</a></li><li><a href="09-sql-transpile.html">SQL 方言转换</a></li><li><a href="10-script-management.html">脚本管理</a></li><li><a href="11-report.html">报表面板</a></li><li><a href="12-ai-assistant.html">AI 助手</a></li><li><a href="13-agent.html">Agent 管理</a></li><li><a href="14-skill.html">Skill 管理</a></li><li><a href="15-mcp-tools.html">MCP 工具</a></li><li><a href="16-ai-provider.html">AI Provider 管理</a></li><li><a href="17-semantic-layer.html">语义层</a></li><li><a href="18-slow-sql.html">慢 SQL 监控</a></li><li><a href="19-inspection.html">数据库巡检</a></li><li><a href="20-server-management.html">服务器管理</a></li><li class="active"><a href="21-audit-log.html">审计日志</a></li><li><a href="22-ai-security.html">AI 安全</a></li><li><a href="23-file-storage.html">文件与存储管理</a></li><li><a href="24-im-bot.html">IM 机器人</a></li><li><a href="25-authentication.html">认证与订阅</a></li><li><a href="26-license.html">许可证管理</a></li><li><a href="27-settings.html">系统设置</a></li><li><a href="28-deployment.html">部署指南</a></li></ul></div><div class="sidebar-section"><div class="sidebar-section-title">技术文档</div><ul class="sidebar-nav"><li><a href="agent-memory-system.html">DBridge Agent 记忆系统详解</a></li><li><a href="semantic-engine-guide.html">DBridge 语义引擎与语义模型</a></li></ul></div>
+  </aside>
+  <main class="main">
+    <div class="content-wrapper">
+      <article class="content">
+        <h1>审计日志</h1>
+<h2>1. 功能概述</h2>
+<p>审计日志记录系统中所有关键操作，提供完整的操作追溯能力。通过审计日志，管理员可以了解谁在什么时间执行了什么操作，操作是否成功，以及操作的详细参数。</p>
+<p><strong>核心能力</strong>：</p>
+<ul>
+<li>全量操作记录</li>
+<li>按模块和结果筛选</li>
+<li>可展开的 JSON 详情</li>
+<li>分页浏览</li>
+<li>自动清理配置</li>
+</ul>
+<hr>
+<h2>2. 进入审计日志</h2>
+<p>在左侧导航栏中，点击 <strong>审计日志</strong> 进入审计日志页面。</p>
+<hr>
+<h2>3. 日志列表</h2>
+<h3>3.1 筛选条件</h3>
+<p>页面顶部提供两个筛选下拉框：</p>
+<p><strong>模块筛选</strong>：</p>
+<table>
+<thead>
+<tr>
+<th>模块</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>全部</td>
+<td>显示所有模块的日志</td>
+</tr>
+<tr>
+<td>系统</td>
+<td>系统级操作（登录、设置变更等）</td>
+</tr>
+<tr>
+<td>数据源</td>
+<td>数据源的增删改查操作</td>
+</tr>
+<tr>
+<td>查询</td>
+<td>SQL 查询执行</td>
+</tr>
+<tr>
+<td>同步</td>
+<td>数据同步操作</td>
+</tr>
+<tr>
+<td>AI</td>
+<td>AI 助手相关操作</td>
+</tr>
+<tr>
+<td>安全</td>
+<td>安全相关操作（脱敏规则、权限变更等）</td>
+</tr>
+<tr>
+<td>报表</td>
+<td>报表操作</td>
+</tr>
+<tr>
+<td>导出</td>
+<td>数据导出操作</td>
+</tr>
+<tr>
+<td>对比</td>
+<td>结构对比操作</td>
+</tr>
+</tbody>
+</table>
+<p><strong>结果筛选</strong>：</p>
+<table>
+<thead>
+<tr>
+<th>结果</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>全部</td>
+<td>显示成功和失败的日志</td>
+</tr>
+<tr>
+<td>成功</td>
+<td>仅显示成功的操作</td>
+</tr>
+<tr>
+<td>失败</td>
+<td>仅显示失败的操作</td>
+</tr>
+</tbody>
+</table>
+<h3>3.2 列表字段</h3>
+<table>
+<thead>
+<tr>
+<th>列名</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>模块</td>
+<td>操作所属模块（标签形式）</td>
+</tr>
+<tr>
+<td>操作</td>
+<td>具体操作类型（标签形式），如&quot;用户登录&quot;、“数据源创建”、“查询执行”、“DDL”、&quot;AI 对话&quot;等</td>
+</tr>
+<tr>
+<td>详情</td>
+<td>操作详情的摘要（截断显示，鼠标悬停查看完整内容）</td>
+</tr>
+<tr>
+<td>结果</td>
+<td>操作结果（成功为绿色标签，失败为红色标签）</td>
+</tr>
+<tr>
+<td>操作者</td>
+<td>执行操作的用户名</td>
+</tr>
+<tr>
+<td>目标</td>
+<td>操作的目标对象名称</td>
+</tr>
+<tr>
+<td>IP 地址</td>
+<td>操作来源 IP</td>
+</tr>
+<tr>
+<td>时间</td>
+<td>操作执行时间</td>
+</tr>
+</tbody>
+</table>
+<h3>3.3 展开详情</h3>
+<p>点击表格行前的展开箭头，可以查看操作的完整 JSON 详情。详情内容包括：</p>
+<ul>
+<li>请求参数</li>
+<li>操作上下文</li>
+<li>错误信息（如果操作失败）</li>
+<li>其他元数据</li>
+</ul>
+<hr>
+<h2>4. 分页</h2>
+<p>审计日志支持分页浏览，每页可选 10、20、50 条记录。页面底部显示总记录数和当前页码。</p>
+<hr>
+<h2>5. 自动清理</h2>
+<p>为避免审计日志无限增长，系统支持配置自动清理策略。详见 <a href="./27-settings.md">系统设置</a> 中的审计日志清理配置。</p>
+<hr>
+<h2>6. 使用场景</h2>
+<ol>
+<li><strong>安全审计</strong>：定期检查敏感操作（如数据源删除、用户权限变更）</li>
+<li><strong>问题排查</strong>：通过操作日志追溯问题发生的原因</li>
+<li><strong>合规检查</strong>：满足行业合规要求的操作审计需求</li>
+<li><strong>行为分析</strong>：了解用户的使用习惯和操作模式</li>
+</ol>
+<hr>
+<h2>7. 注意事项</h2>
+<ul>
+<li>审计日志仅记录操作信息，不记录查询结果数据</li>
+<li>失败的日志同样会被记录，便于排查问题</li>
+<li>操作者信息基于当前登录用户，API Key 调用会记录对应的 Key 标识</li>
+<li>建议定期导出重要审计日志作为归档</li>
+</ul>
+
+      </article>
+      <div class="page-nav"><a class="prev" href="20-server-management.html"><span class="nav-label">← 上一篇</span><span class="nav-title">服务器管理</span></a><a class="next" href="22-ai-security.html"><span class="nav-label">下一篇 →</span><span class="nav-title">AI 安全</span></a></div>
+    </div>
+  </main>
+</div>
+</body>
+</html>

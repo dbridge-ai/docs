@@ -1,0 +1,1251 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DBridge 语义引擎与语义模型 - DBridge 帮助文档</title>
+
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  background: #f5f5f5;
+  color: #262626;
+  line-height: 1.7;
+  font-size: 15px;
+}
+
+.topbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 56px;
+  background: #fff;
+  border-bottom: 1px solid #e8e8e8;
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+  z-index: 100;
+}
+
+.topbar-logo {
+  font-size: 16px;
+  font-weight: 600;
+  color: #262626;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.topbar-logo .logo-icon {
+  width: 28px;
+  height: 28px;
+  background: linear-gradient(135deg, #00b96b, #00d68f);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.topbar-subtitle {
+  font-size: 13px;
+  color: #8c8c8c;
+  margin-left: 12px;
+  padding-left: 12px;
+  border-left: 1px solid #e8e8e8;
+}
+
+.layout {
+  display: flex;
+  margin-top: 56px;
+  min-height: calc(100vh - 56px);
+}
+
+.sidebar {
+  position: fixed;
+  top: 56px;
+  left: 0;
+  width: 260px;
+  height: calc(100vh - 56px);
+  background: #fff;
+  border-right: 1px solid #e8e8e8;
+  overflow-y: auto;
+  padding: 16px 0;
+}
+
+.sidebar::-webkit-scrollbar { width: 4px; }
+.sidebar::-webkit-scrollbar-thumb { background: #d9d9d9; border-radius: 2px; }
+
+.sidebar-section { margin-bottom: 8px; }
+
+.sidebar-section-title {
+  padding: 8px 20px 4px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #8c8c8c;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.sidebar-nav { list-style: none; }
+
+.sidebar-nav li a {
+  display: block;
+  padding: 6px 20px 6px 24px;
+  color: #595959;
+  text-decoration: none;
+  font-size: 14px;
+  line-height: 1.6;
+  transition: all 0.15s;
+  border-left: 3px solid transparent;
+}
+
+.sidebar-nav li a:hover {
+  color: #00b96b;
+  background: #f6ffed;
+}
+
+.sidebar-nav li.active a {
+  color: #00b96b;
+  background: #f6ffed;
+  border-left-color: #00b96b;
+  font-weight: 500;
+}
+
+.main {
+  margin-left: 260px;
+  flex: 1;
+  min-width: 0;
+}
+
+.content-wrapper {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 48px 64px 80px;
+}
+
+.content { background: #fff; padding: 40px 48px; border-radius: 8px; }
+
+.content h1 {
+  font-size: 28px;
+  font-weight: 600;
+  color: #262626;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.content h2 {
+  font-size: 22px;
+  font-weight: 600;
+  color: #262626;
+  margin-top: 40px;
+  margin-bottom: 16px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.content h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #262626;
+  margin-top: 32px;
+  margin-bottom: 12px;
+}
+
+.content h4 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #262626;
+  margin-top: 24px;
+  margin-bottom: 8px;
+}
+
+.content p {
+  margin-bottom: 16px;
+  color: #434343;
+}
+
+.content a {
+  color: #00b96b;
+  text-decoration: none;
+}
+
+.content a:hover { text-decoration: underline; }
+
+.content ul, .content ol {
+  margin-bottom: 16px;
+  padding-left: 24px;
+}
+
+.content li {
+  margin-bottom: 6px;
+  color: #434343;
+}
+
+.content blockquote {
+  margin: 16px 0;
+  padding: 12px 16px;
+  background: #f6ffed;
+  border-left: 4px solid #00b96b;
+  border-radius: 0 4px 4px 0;
+  color: #595959;
+}
+
+.content blockquote p { margin-bottom: 0; }
+
+.content code {
+  background: #f5f5f5;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 13px;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  color: #d4380d;
+}
+
+.content pre {
+  margin: 16px 0;
+  padding: 16px 20px;
+  background: #1e1e1e;
+  border-radius: 8px;
+  overflow-x: auto;
+  line-height: 1.6;
+}
+
+.content pre code {
+  background: none;
+  padding: 0;
+  color: #d4d4d4;
+  font-size: 13px;
+}
+
+.content table {
+  width: 100%;
+  margin: 16px 0;
+  border-collapse: collapse;
+  border: 1px solid #e8e8e8;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.content thead th {
+  background: #fafafa;
+  padding: 10px 14px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 14px;
+  color: #262626;
+  border-bottom: 1px solid #e8e8e8;
+}
+
+.content tbody td {
+  padding: 10px 14px;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 14px;
+  color: #434343;
+}
+
+.content tbody tr:last-child td { border-bottom: none; }
+
+.content tbody tr:nth-child(even) { background: #fafafa; }
+
+.content img {
+  max-width: 100%;
+  border-radius: 6px;
+  margin: 16px 0;
+}
+
+.content hr {
+  border: none;
+  border-top: 1px solid #f0f0f0;
+  margin: 32px 0;
+}
+
+.page-nav {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 48px;
+  padding-top: 24px;
+  border-top: 1px solid #f0f0f0;
+  gap: 16px;
+}
+
+.page-nav a {
+  display: flex;
+  flex-direction: column;
+  padding: 12px 20px;
+  border: 1px solid #e8e8e8;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: all 0.15s;
+  min-width: 0;
+  max-width: 48%;
+}
+
+.page-nav a:hover {
+  border-color: #00b96b;
+  background: #f6ffed;
+  text-decoration: none;
+}
+
+.page-nav .prev { align-items: flex-start; }
+.page-nav .next { align-items: flex-end; margin-left: auto; }
+
+.nav-label {
+  font-size: 12px;
+  color: #8c8c8c;
+  margin-bottom: 4px;
+}
+
+.nav-title {
+  font-size: 14px;
+  color: #00b96b;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+@media (max-width: 768px) {
+  .sidebar { display: none; }
+  .main { margin-left: 0; }
+  .content-wrapper { padding: 24px 16px 60px; }
+  .content h1 { font-size: 24px; }
+  .content h2 { font-size: 20px; }
+}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="topbar-logo">
+    <span class="logo-icon">D</span>
+    <span>DBridge 帮助文档</span>
+  </div>
+  <span class="topbar-subtitle">DBridge 语义引擎与语义模型</span>
+</div>
+<div class="layout">
+  <aside class="sidebar">
+    <div class="sidebar-section"><div class="sidebar-section-title">功能介绍</div><ul class="sidebar-nav"><li><a href="00-preface.html">DBridge Pro 产品概述</a></li><li><a href="01-quick-start.html">快速开始</a></li><li><a href="02-dashboard.html">仪表盘</a></li><li><a href="03-datasource.html">数据源管理</a></li><li><a href="04-sql-editor.html">SQL 编辑器与数据查询</a></li><li><a href="05-database-management.html">数据库管理</a></li><li><a href="06-structure-compare.html">结构对比</a></li><li><a href="07-data-sync.html">数据同步</a></li><li><a href="08-export-import.html">导出与导入</a></li><li><a href="09-sql-transpile.html">SQL 方言转换</a></li><li><a href="10-script-management.html">脚本管理</a></li><li><a href="11-report.html">报表面板</a></li><li><a href="12-ai-assistant.html">AI 助手</a></li><li><a href="13-agent.html">Agent 管理</a></li><li><a href="14-skill.html">Skill 管理</a></li><li><a href="15-mcp-tools.html">MCP 工具</a></li><li><a href="16-ai-provider.html">AI Provider 管理</a></li><li><a href="17-semantic-layer.html">语义层</a></li><li><a href="18-slow-sql.html">慢 SQL 监控</a></li><li><a href="19-inspection.html">数据库巡检</a></li><li><a href="20-server-management.html">服务器管理</a></li><li><a href="21-audit-log.html">审计日志</a></li><li><a href="22-ai-security.html">AI 安全</a></li><li><a href="23-file-storage.html">文件与存储管理</a></li><li><a href="24-im-bot.html">IM 机器人</a></li><li><a href="25-authentication.html">认证与订阅</a></li><li><a href="26-license.html">许可证管理</a></li><li><a href="27-settings.html">系统设置</a></li><li><a href="28-deployment.html">部署指南</a></li></ul></div><div class="sidebar-section"><div class="sidebar-section-title">技术文档</div><ul class="sidebar-nav"><li><a href="agent-memory-system.html">DBridge Agent 记忆系统详解</a></li><li class="active"><a href="semantic-engine-guide.html">DBridge 语义引擎与语义模型</a></li></ul></div>
+  </aside>
+  <main class="main">
+    <div class="content-wrapper">
+      <article class="content">
+        <h1>DBridge 语义引擎与语义模型</h1>
+<h2>1. 概述</h2>
+<p>DBridge 语义层（Semantic Layer）是连接业务用户与底层数据库的桥梁。它将物理数据库表抽象为业务友好的 <strong>Cube（数据模型）</strong>，通过 <strong>Measures（度量）</strong> 和 <strong>Dimensions（维度）</strong> 定义业务指标体系，使非技术人员也能通过自然语言或简单配置完成复杂数据分析。</p>
+<p>语义层的核心价值：</p>
+<ul>
+<li><strong>业务语义封装</strong>：将 SQL 表达式、聚合逻辑、表关联封装为可复用的业务指标</li>
+<li><strong>统一查询接口</strong>：无论底层是 MySQL、PostgreSQL 还是其他数据库，上层使用统一的查询语法</li>
+<li><strong>AI 友好</strong>：为大语言模型（LLM）提供结构化的元数据，使 AI 能准确理解业务数据并生成正确查询</li>
+</ul>
+<hr>
+<h2>2. 核心概念</h2>
+<h3>2.1 Cube（数据模型）</h3>
+<p>Cube 是语义层的基本单元，代表一个业务主题域（如&quot;订单&quot;、“用户”、“产品”）。</p>
+<p><strong>数据库存储</strong>：<code>semantic_cubes</code> 表</p>
+<table>
+<thead>
+<tr>
+<th>字段</th>
+<th>类型</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>id</code></td>
+<td>UUID</td>
+<td>主键</td>
+</tr>
+<tr>
+<td><code>name</code></td>
+<td>string</td>
+<td>唯一标识，如 <code>orders</code></td>
+</tr>
+<tr>
+<td><code>display_name</code></td>
+<td>string</td>
+<td>显示名称，如 <code>订单</code></td>
+</tr>
+<tr>
+<td><code>description</code></td>
+<td>text</td>
+<td>业务描述</td>
+</tr>
+<tr>
+<td><code>data_source_id</code></td>
+<td>string</td>
+<td>关联的数据源 ID</td>
+</tr>
+<tr>
+<td><code>database</code></td>
+<td>string</td>
+<td>数据库名（可选）</td>
+</tr>
+<tr>
+<td><code>schema_name</code></td>
+<td>string</td>
+<td>Schema 名（可选）</td>
+</tr>
+<tr>
+<td><code>sql_table</code></td>
+<td>string</td>
+<td>物理表名，如 <code>public.orders</code></td>
+</tr>
+<tr>
+<td><code>sql_query</code></td>
+<td>text</td>
+<td>自定义 SQL 查询（与 sql_table 二选一）</td>
+</tr>
+<tr>
+<td><code>measures_json</code></td>
+<td>JSON</td>
+<td>度量定义数组</td>
+</tr>
+<tr>
+<td><code>dimensions_json</code></td>
+<td>JSON</td>
+<td>维度定义数组</td>
+</tr>
+<tr>
+<td><code>joins_json</code></td>
+<td>JSON</td>
+<td>关联定义数组</td>
+</tr>
+<tr>
+<td><code>pre_aggs_json</code></td>
+<td>JSON</td>
+<td>预聚合定义数组</td>
+</tr>
+<tr>
+<td><code>version</code></td>
+<td>int</td>
+<td>版本号，每次更新递增</td>
+</tr>
+<tr>
+<td><code>tenant_id</code></td>
+<td>string</td>
+<td>租户 ID（多租户隔离）</td>
+</tr>
+</tbody>
+</table>
+<h3>2.2 Measure（度量）</h3>
+<p>度量是可聚合的业务指标，如&quot;订单总额&quot;、“用户数”。</p>
+<pre><code class="language-json">{
+  &quot;name&quot;: &quot;total_amount&quot;,
+  &quot;display_name&quot;: &quot;订单总额&quot;,
+  &quot;description&quot;: &quot;所有订单的金额总和&quot;,
+  &quot;type&quot;: &quot;sum&quot;,
+  &quot;sql&quot;: &quot;SUM({field})&quot;,
+  &quot;field&quot;: &quot;amount&quot;
+}
+</code></pre>
+<p><strong>支持的聚合类型</strong>：</p>
+<ul>
+<li><code>sum</code> — 求和</li>
+<li><code>avg</code> — 平均值</li>
+<li><code>min</code> / <code>max</code> — 最小/最大值</li>
+<li><code>count</code> — 计数</li>
+<li><code>count_distinct</code> — 去重计数</li>
+<li><code>number</code> — 数值（不聚合）</li>
+<li><code>running_total</code> — 累计值</li>
+</ul>
+<h3>2.3 Dimension（维度）</h3>
+<p>维度是数据的分组或过滤属性，如&quot;日期&quot;、“地区”、“状态”。</p>
+<pre><code class="language-json">{
+  &quot;name&quot;: &quot;date&quot;,
+  &quot;display_name&quot;: &quot;订单日期&quot;,
+  &quot;description&quot;: &quot;订单创建日期&quot;,
+  &quot;sql&quot;: &quot;order_date&quot;,
+  &quot;time_granularity&quot;: &quot;day&quot;
+}
+</code></pre>
+<p><strong>时间维度粒度</strong>：<code>day</code>、<code>week</code>、<code>month</code>、<code>quarter</code>、<code>year</code></p>
+<h3>2.4 Join（关联）</h3>
+<p>Cube 之间可以通过 Join 关联，实现跨模型查询。</p>
+<pre><code class="language-json">{
+  &quot;join_cube_name&quot;: &quot;users&quot;,
+  &quot;relationship&quot;: &quot;many_to_one&quot;,
+  &quot;sql&quot;: &quot;orders.user_id = users.id&quot;,
+  &quot;join_type&quot;: &quot;left&quot;
+}
+</code></pre>
+<hr>
+<h2>3. 语义引擎架构</h2>
+<h3>3.1 整体架构</h3>
+<pre><code>┌─────────────────────────────────────────────────────────┐
+│                    接入层                                 │
+│  REST API  │  MCP Server  │  Agent SDK  │  前端 UI       │
+└────────────┴──────────────┴─────────────┴────────────────┘
+                         │
+                         ▼
+              ┌─────────────────────┐
+              │  SemanticQueryService│  ← 查询编排服务
+              ─────────────────────┘
+                         │
+           ┌─────────────┼─────────────┐
+           ▼             ▼             ▼
+     验证服务       审计日志       行级安全
+           │
+           ▼
+    ┌──────────────┐
+    │  Adapter Registry │  ← 适配器注册中心
+    └──────────────┘
+           │
+    ┌──────┴──────┐
+    ▼             ▼
+LocalAdapter  CubeJSAdapter  ← 可插拔引擎
+    │
+    ▼
+┌──────────────┐
+│ LocalCompiler │  ← SQL 编译器
+└──────────────┘
+    │
+    ▼
+──────────────┐
+│  QueryService │  ← 底层 SQL 执行
+└──────────────┘
+</code></pre>
+<h3>3.2 核心组件</h3>
+<h4>SemanticQueryService（查询编排）</h4>
+<p>位置：<code>internal/semantic/service/query_service.go</code></p>
+<p>负责完整的查询生命周期：</p>
+<ol>
+<li><strong>验证</strong> — 校验字段格式、运算符白名单、Limit 上限</li>
+<li><strong>路由</strong> — 根据引擎名称选择适配器</li>
+<li><strong>行级安全</strong> — 应用数据权限过滤</li>
+<li><strong>执行</strong> — 调用适配器的 Query 方法</li>
+<li><strong>审计</strong> — 记录查询日志（用户、SQL、耗时、行数）</li>
+</ol>
+<h4>Adapter Registry（适配器注册中心）</h4>
+<p>位置：<code>internal/semantic/adapter/registry.go</code></p>
+<p>管理所有语义引擎实例：</p>
+<ul>
+<li>支持 <code>local</code> 和 <code>cubejs</code> 两种适配器类型</li>
+<li>线程安全的并发访问</li>
+<li>支持设置默认引擎</li>
+</ul>
+<h4>LocalAdapter（本地引擎）</h4>
+<p>位置：<code>internal/semantic/adapter/local_adapter.go</code></p>
+<p>将语义查询编译为 SQL 并在目标数据库执行：</p>
+<ol>
+<li>从 Registry 加载 Cube 定义到内存缓存</li>
+<li>调用 LocalCompiler 将 QueryRequest 编译为 SQL</li>
+<li>通过 QueryService 执行 SQL 并返回结果</li>
+</ol>
+<h4>LocalCompiler（SQL 编译器）</h4>
+<p>位置：<code>internal/semantic/adapter/local_compiler.go</code></p>
+<p>核心编译逻辑：</p>
+<ul>
+<li><strong>SELECT</strong>：将 Measure 的 SQL 模板（如 <code>SUM({field})</code>）替换为实际字段，包裹聚合函数</li>
+<li><strong>FROM</strong>：使用 Cube 的 <code>sql_table</code> 或 <code>sql_query</code></li>
+<li><strong>JOIN</strong>：仅关联查询中引用的 Cube</li>
+<li><strong>WHERE</strong>：将 Filter 结构转换为 SQL 条件（支持 <code>equals</code>、<code>contains</code>、<code>gt</code>、<code>in</code> 等）</li>
+<li><strong>GROUP BY</strong>：所有非聚合维度</li>
+<li><strong>ORDER BY / LIMIT</strong>：透传</li>
+</ul>
+<hr>
+<h2>4. MCP Tools 集成</h2>
+<h3>4.1 三个语义工具</h3>
+<p>DBridge 通过 MCP（Model Context Protocol）向外部 AI 客户端暴露三个语义工具：</p>
+<table>
+<thead>
+<tr>
+<th>工具名</th>
+<th>功能</th>
+<th>输入</th>
+<th>输出</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>semantic_list_engines</code></td>
+<td>列出所有语义引擎</td>
+<td>无</td>
+<td>引擎名称 + 能力列表</td>
+</tr>
+<tr>
+<td><code>semantic_list_cubes</code></td>
+<td>列出所有 Cube</td>
+<td><code>engine</code>（可选）</td>
+<td>Cube 元数据（名称、度量、维度）</td>
+</tr>
+<tr>
+<td><code>semantic_query</code></td>
+<td>执行语义查询</td>
+<td><code>engine</code>、<code>measures</code>、<code>dimensions</code>、<code>filters</code> 等</td>
+<td><code>columns</code>、<code>rows</code>、<code>sql</code>、<code>duration_ms</code></td>
+</tr>
+</tbody>
+</table>
+<h3>4.2 工具定义</h3>
+<p>位置：<code>internal/mcp/tools/semantic.go</code></p>
+<pre><code class="language-go">// semantic_query 输入结构
+type SemanticQueryInput struct {
+    Engine       string          `json:&quot;engine&quot;`
+    DataSourceID string          `json:&quot;data_source_id&quot;`
+    Measures     []string        `json:&quot;measures&quot;`      // [&quot;orders.total_amount&quot;]
+    Dimensions   []string        `json:&quot;dimensions&quot;`    // [&quot;orders.date&quot;]
+    Filters      []engine.Filter `json:&quot;filters&quot;`
+    Order        []engine.OrderItem `json:&quot;order&quot;`
+    Limit        int             `json:&quot;limit&quot;`
+    Offset       int             `json:&quot;offset&quot;`
+}
+
+// semantic_query 输出结构
+type SemanticQueryOutput struct {
+    Columns   []string    `json:&quot;columns&quot;`
+    Rows      []map[string]any `json:&quot;rows&quot;`
+    TotalRows int         `json:&quot;total_rows&quot;`
+    DurationMs int64      `json:&quot;duration_ms&quot;`
+    SQL       string      `json:&quot;sql&quot;`
+    CacheHit  bool        `json:&quot;cache_hit&quot;`
+    Engine    string      `json:&quot;engine&quot;`
+}
+</code></pre>
+<h3>4.3 工具注册</h3>
+<p>位置：<code>internal/mcp/server.go</code> (lines 332-355)</p>
+<pre><code class="language-go">if svc.Semantic != nil {
+    // 注册 semantic_list_engines
+    mcp.AddTool(server, &amp;mcp.Tool{
+        Name:        &quot;semantic_list_engines&quot;,
+        Description: &quot;列出所有已注册的语义层引擎及其能力信息&quot;,
+        InputSchema: mcp.ToolInputSchema{Type: &quot;object&quot;, Properties: map[string]any{}},
+    }, handleListEngines)
+
+    // 注册 semantic_list_cubes
+    mcp.AddTool(server, &amp;mcp.Tool{...}, handleListCubes)
+
+    // 注册 semantic_query
+    mcp.AddTool(server, &amp;mcp.Tool{...}, handleSemanticQuery)
+}
+</code></pre>
+<p>所有语义工具的权限要求为 <code>read</code>，类别为 <code>semantic</code>。</p>
+<hr>
+<h2>5. Agent LLM 调用流程</h2>
+<h3>5.1 两条调用路径</h3>
+<h4>路径 A：Agent 内置工具（agentsdkwrap）</h4>
+<p>位置：<code>internal/service/agentsdkwrap/runner.go</code> (lines 506-601)</p>
+<p>当 Agent 执行时，语义工具作为内置工具直接注入：</p>
+<pre><code class="language-go">// 默认只读工具包含语义发现工具
+DefaultReadTools = []string{
+    &quot;semantic_list_engines&quot;,
+    &quot;semantic_list_cubes&quot;,
+    // ... 其他工具
+}
+
+// 语义查询工具实现
+semanticQueryTool := types.Tool{
+    Name: &quot;semantic_query&quot;,
+    Exec: func(ctx context.Context, argsJSON string) (string, error) {
+        var input SemanticQueryInput
+        json.Unmarshal([]byte(argsJSON), &amp;input)
+
+        queryReq := &amp;engine.QueryRequest{
+            Measures:   input.Measures,
+            Dimensions: input.Dimensions,
+            Filters:    input.Filters,
+        }
+
+        result, err := semanticSvc.Query(ctx, queryReq, nil, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;agent&quot;)
+        return formatQueryResult(result), nil
+    },
+}
+</code></pre>
+<h4>路径 B：MCP 协议（外部客户端）</h4>
+<p>位置：<code>internal/mcp/server.go</code></p>
+<p>外部 MCP 客户端（如 Claude Desktop、Codex）通过 MCP 协议连接，获取相同的三个工具。</p>
+<h3>5.2 完整调用示例</h3>
+<p><strong>场景</strong>：用户问&quot;帮我查一下上个月的订单总额&quot;</p>
+<pre><code>步骤 1: LLM 调用 semantic_list_cubes
+── 输入: {}
+├── 返回: [
+│     { name: &quot;orders&quot;, display_name: &quot;订单&quot;,
+│       measures: [&quot;total_amount&quot;, &quot;order_count&quot;],
+│       dimensions: [&quot;date&quot;, &quot;region&quot;, &quot;status&quot;] },
+│     { name: &quot;users&quot;, ... }
+│   ]
+└── LLM 理解: 订单数据在 &quot;orders&quot; Cube 中
+
+步骤 2: LLM 调用 semantic_query
+── 输入: {
+│     measures: [&quot;orders.total_amount&quot;],
+│     dimensions: [&quot;orders.date&quot;],
+│     filters: [{
+│       field: &quot;orders.date&quot;,
+│       op: &quot;gte&quot;,
+│       value: &quot;2026-09-01&quot;
+│     }, {
+│       field: &quot;orders.date&quot;,
+│       op: &quot;lt&quot;,
+│       value: &quot;2026-10-01&quot;
+│     }]
+│   }
+├── 内部流程:
+│   ├── ValidateQueryRequest() — 验证字段格式
+│   ├── resolveEngine() — 选择引擎
+│   ├── LocalCompiler.Compile() — 生成 SQL:
+│   │     SELECT SUM(amount) AS total_amount,
+│   │            order_date AS date
+│   │     FROM orders
+│   │     WHERE order_date &gt;= '2026-09-01'
+│   │       AND order_date &lt; '2026-10-01'
+│   │     GROUP BY order_date
+│   ├── querySvc.Execute() — 执行 SQL
+│   ── 返回: { columns, rows, sql, duration_ms }
+└── LLM 生成回答: &quot;上个月订单总额为 ¥1,234,567&quot;
+</code></pre>
+<h3>5.3 ToolResolver 工具解析</h3>
+<p>位置：<code>internal/service/agentexec/mcp_bridge.go</code></p>
+<p>Agent 执行时，ToolResolver 按以下优先级解析工具：</p>
+<ol>
+<li><strong>内置 Go 工具</strong> — 从 <code>agentsdkwrap.BuiltinTools</code> 匹配（语义工具在此）</li>
+<li><strong>MCP 工具定义</strong> — 从数据库 <code>mcp_tool_definitions</code> 表加载（自定义 SQL 工具等）</li>
+<li><strong>未解析</strong> — 记录警告日志</li>
+</ol>
+<p>每个工具执行前经过 <code>PermissionGuard.Check()</code> 权限校验，执行后通过 <code>captureResult()</code> 记录审计。</p>
+<hr>
+<h2>6. 数据模型详解</h2>
+<h3>6.1 CubeDefinition（内存结构）</h3>
+<p>位置：<code>internal/semantic/engine/metadata.go</code></p>
+<pre><code class="language-go">type CubeDefinition struct {
+    Name           string              `json:&quot;name&quot;`
+    DisplayName    string              `json:&quot;display_name&quot;`
+    Description    string              `json:&quot;description&quot;`
+    DataSourceID   string              `json:&quot;data_source_id&quot;`
+    Database       string              `json:&quot;database,omitempty&quot;`
+    Schema         string              `json:&quot;schema,omitempty&quot;`
+    SQLTable       string              `json:&quot;sql_table,omitempty&quot;`
+    SQLQuery       string              `json:&quot;sql_query,omitempty&quot;`
+    Measures       []*MeasureDetail    `json:&quot;measures&quot;`
+    Dimensions     []*DimensionDetail  `json:&quot;dimensions&quot;`
+    Joins          []*JoinDetail       `json:&quot;joins,omitempty&quot;`
+    PreAggregations []*PreAggDetail    `json:&quot;pre_aggregations,omitempty&quot;`
+    Version        int                 `json:&quot;version&quot;`
+    UpstreamTables []string            `json:&quot;upstream_tables,omitempty&quot;`
+}
+</code></pre>
+<h3>6.2 MeasureDetail</h3>
+<pre><code class="language-go">type MeasureDetail struct {
+    MeasureMeta
+    SQL         string   `json:&quot;sql&quot;`           // SQL 表达式模板
+    Filters     []Filter `json:&quot;filters&quot;`       // 度量级过滤
+    DrillMembers []string `json:&quot;drill_members&quot;` // 下钻成员
+    Metadata    map[string]any `json:&quot;metadata&quot;`
+}
+
+type MeasureMeta struct {
+    Name        string `json:&quot;name&quot;`
+    DisplayName string `json:&quot;display_name&quot;`
+    Description string `json:&quot;description&quot;`
+    Type        string `json:&quot;type&quot;`  // sum, avg, count, etc.
+}
+</code></pre>
+<h3>6.3 DimensionDetail</h3>
+<pre><code class="language-go">type DimensionDetail struct {
+    DimensionMeta
+    SQL            string `json:&quot;sql&quot;`
+    PrimaryKey     bool   `json:&quot;primary_key&quot;`
+    TimeGranularity string `json:&quot;time_granularity&quot;` // day, week, month, etc.
+    Metadata       map[string]any `json:&quot;metadata&quot;`
+}
+</code></pre>
+<h3>6.4 CubeMeta（摘要视图）</h3>
+<p>用于列表展示，仅包含名称和成员列表：</p>
+<pre><code class="language-go">type CubeMeta struct {
+    Name        string   `json:&quot;name&quot;`
+    DisplayName string   `json:&quot;display_name&quot;`
+    Description string   `json:&quot;description&quot;`
+    Measures    []string `json:&quot;measures&quot;`    // 仅名称
+    Dimensions  []string `json:&quot;dimensions&quot;`  // 仅名称
+    DataSource  string   `json:&quot;data_source&quot;`
+}
+</code></pre>
+<hr>
+<h2>7. 查询验证规则</h2>
+<p>位置：<code>internal/semantic/service/validation.go</code></p>
+<h3>7.1 字段格式</h3>
+<p>所有 Measure/Dimension/Filter 字段必须遵循 <code>cube_name.member_name</code> 格式：</p>
+<pre><code>✅ orders.total_amount
+✅ users.created_date
+❌ total_amount          // 缺少 Cube 前缀
+ orders.               // 缺少成员名
+ .total_amount         // 缺少 Cube 名
+</code></pre>
+<p>正则：<code>^[a-zA-Z_][a-zA-Z0-9_]*\.[a-zA-Z_][a-zA-Z0-9_]*$</code></p>
+<h3>7.2 运算符白名单</h3>
+<table>
+<thead>
+<tr>
+<th>运算符</th>
+<th>说明</th>
+<th>示例</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>equals</code></td>
+<td>等于</td>
+<td><code>status equals &quot;completed&quot;</code></td>
+</tr>
+<tr>
+<td><code>notEquals</code></td>
+<td>不等于</td>
+<td><code>status notEquals &quot;cancelled&quot;</code></td>
+</tr>
+<tr>
+<td><code>contains</code></td>
+<td>包含</td>
+<td><code>name contains &quot;张&quot;</code></td>
+</tr>
+<tr>
+<td><code>gt</code> / <code>gte</code></td>
+<td>大于 / 大于等于</td>
+<td><code>amount gt 100</code></td>
+</tr>
+<tr>
+<td><code>lt</code> / <code>lte</code></td>
+<td>小于 / 小于等于</td>
+<td><code>date lte &quot;2026-12-31&quot;</code></td>
+</tr>
+<tr>
+<td><code>in</code></td>
+<td>在列表中</td>
+<td><code>region in [&quot;北京&quot;, &quot;上海&quot;]</code></td>
+</tr>
+<tr>
+<td><code>set</code> / <code>notSet</code></td>
+<td>已设置 / 未设置</td>
+<td><code>email set</code></td>
+</tr>
+</tbody>
+</table>
+<h3>7.3 Limit 上限</h3>
+<p>最大返回行数限制为 <strong>10,000</strong>，防止大结果集导致内存溢出。</p>
+<hr>
+<h2>8. 与数据源的关联</h2>
+<h3>8.1 数据源配置</h3>
+<p>Cube 通过 <code>data_source_id</code> 关联到具体的数据库连接。数据源配置存储在 <code>data_sources</code> 表中，包含：</p>
+<ul>
+<li>数据库类型（MySQL、PostgreSQL、SQL Server 等）</li>
+<li>连接信息（Host、Port、Database、Username、Password）</li>
+<li>连接池配置</li>
+</ul>
+<h3>8.2 查询路由</h3>
+<p>当执行语义查询时：</p>
+<ol>
+<li>从 Cube 定义中获取 <code>data_source_id</code></li>
+<li>通过 <code>DataSourceService</code> 获取连接配置</li>
+<li>将编译后的 SQL 发送到目标数据库执行</li>
+<li>返回结果集</li>
+</ol>
+<h3>8.3 多数据源支持</h3>
+<p>不同 Cube 可以关联不同的数据源，实现跨库查询：</p>
+<pre><code>Cube &quot;orders&quot; → MySQL 数据库 A
+Cube &quot;users&quot;  → PostgreSQL 数据库 B
+</code></pre>
+<p>通过 Join 定义，可以在查询时自动关联不同数据源的 Cube（需引擎支持）。</p>
+<hr>
+<h2>9. 行级数据安全</h2>
+<h3>9.1 配置方式</h3>
+<p>在 <code>SemanticQueryService</code> 中配置行级过滤器：</p>
+<pre><code class="language-go">rowLevelFilters := []engine.RowLevelFilter{
+    {
+        CubeName: &quot;orders&quot;,
+        Field:    &quot;region&quot;,
+        Resolver: func(ctx context.Context, userRoles []string) []string {
+            // 根据用户角色返回允许访问的地区
+            return getUserRegions(ctx)
+        },
+    },
+}
+</code></pre>
+<h3>9.2 执行时机</h3>
+<p>行级过滤器在查询执行前应用，自动追加到 WHERE 条件：</p>
+<pre><code class="language-sql">-- 原始查询
+SELECT SUM(amount) FROM orders WHERE date &gt;= '2026-09-01'
+
+-- 应用行级安全后
+SELECT SUM(amount) FROM orders
+WHERE date &gt;= '2026-09-01'
+  AND region IN ('华东', '华北')  -- 自动追加
+</code></pre>
+<hr>
+<h2>10. 审计日志</h2>
+<p>每次语义查询都会记录审计日志，包含：</p>
+<table>
+<thead>
+<tr>
+<th>字段</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>user_id</code></td>
+<td>执行查询的用户 ID</td>
+</tr>
+<tr>
+<td><code>cube_name</code></td>
+<td>查询的 Cube 名称</td>
+</tr>
+<tr>
+<td><code>sql</code></td>
+<td>生成的 SQL 语句</td>
+</tr>
+<tr>
+<td><code>duration_ms</code></td>
+<td>查询耗时（毫秒）</td>
+</tr>
+<tr>
+<td><code>row_count</code></td>
+<td>返回行数</td>
+</tr>
+<tr>
+<td><code>status</code></td>
+<td>执行状态（success/error）</td>
+</tr>
+<tr>
+<td><code>error_message</code></td>
+<td>错误信息（如有）</td>
+</tr>
+<tr>
+<td><code>created_at</code></td>
+<td>执行时间</td>
+</tr>
+</tbody>
+</table>
+<p>审计日志存储在 <code>audit_logs</code> 表中，模块标识为 <code>semantic</code>。</p>
+<hr>
+<h2>11. 前端集成</h2>
+<h3>11.1 Cube 管理界面</h3>
+<p>位置：<code>web/src/pages/semantic/CubeEdit.tsx</code></p>
+<p>提供 Cube 的创建、编辑、查看功能：</p>
+<ul>
+<li>基本信息配置（名称、描述、数据源、表名）</li>
+<li>度量定义（名称、类型、SQL 表达式）</li>
+<li>维度定义（名称、SQL 表达式、时间粒度）</li>
+<li>Join 配置（关联 Cube、关联条件、关联类型）</li>
+</ul>
+<h3>11.2 AI 生成立方体</h3>
+<p>位置：<code>web/src/pages/semantic/CubeEdit.tsx</code> (lines 253-278)</p>
+<p>用户可以用自然语言描述需求，AI Agent 自动生成 Cube 配置：</p>
+<pre><code>用户输入: &quot;创建一个订单分析模型，包含订单总额、订单数量等指标，按日期和地区分组&quot;
+    ↓
+AI 调用 LLM 生成 Cube JSON
+    ↓
+前端解析 JSON 并填充表单
+    ↓
+用户确认后保存
+</code></pre>
+<h3>11.3 语义查询 API</h3>
+<p>前端通过 REST API 执行语义查询：</p>
+<pre><code class="language-typescript">// 列出 Cube
+GET /api/v1/semantic/cubes
+
+// 执行查询
+POST /api/v1/semantic/query
+{
+  &quot;engine&quot;: &quot;local&quot;,
+  &quot;measures&quot;: [&quot;orders.total_amount&quot;],
+  &quot;dimensions&quot;: [&quot;orders.date&quot;],
+  &quot;filters&quot;: [...],
+  &quot;limit&quot;: 100
+}
+</code></pre>
+<hr>
+<h2>12. 配置示例</h2>
+<h3>12.1 配置文件</h3>
+<p>位置：<code>configs/config.yaml</code></p>
+<pre><code class="language-yaml">semantic:
+  # 默认适配器
+  default_adapter: &quot;local&quot;
+
+  # Cube.js 适配器（可选）
+  cubejs:
+    api_url: &quot;http://localhost:4000&quot;
+    api_token: &quot;${CUBEJS_API_TOKEN}&quot;
+</code></pre>
+<h3>12.2 环境变量</h3>
+<table>
+<thead>
+<tr>
+<th>配置项</th>
+<th>环境变量</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>semantic.default_adapter</code></td>
+<td><code>DBRIDGE_SEMANTIC_DEFAULT_ADAPTER</code></td>
+</tr>
+<tr>
+<td><code>semantic.cubejs.api_url</code></td>
+<td><code>DBRIDGE_SEMANTIC_CUBEJS_API_URL</code></td>
+</tr>
+<tr>
+<td><code>semantic.cubejs.api_token</code></td>
+<td><code>DBRIDGE_SEMANTIC_CUBEJS_API_TOKEN</code></td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2>13. 关键代码位置索引</h2>
+<table>
+<thead>
+<tr>
+<th>组件</th>
+<th>文件路径</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>语义查询服务</strong></td>
+<td><code>internal/semantic/service/query_service.go</code></td>
+<td>查询编排核心</td>
+</tr>
+<tr>
+<td><strong>查询验证</strong></td>
+<td><code>internal/semantic/service/validation.go</code></td>
+<td>字段格式、运算符校验</td>
+</tr>
+<tr>
+<td><strong>适配器注册中心</strong></td>
+<td><code>internal/semantic/adapter/registry.go</code></td>
+<td>引擎管理</td>
+</tr>
+<tr>
+<td><strong>本地适配器</strong></td>
+<td><code>internal/semantic/adapter/local_adapter.go</code></td>
+<td>SQL 编译与执行</td>
+</tr>
+<tr>
+<td><strong>SQL 编译器</strong></td>
+<td><code>internal/semantic/adapter/local_compiler.go</code></td>
+<td>语义→SQL 转换</td>
+</tr>
+<tr>
+<td><strong>本地注册表</strong></td>
+<td><code>internal/semantic/adapter/local_registry.go</code></td>
+<td>Cube 缓存管理</td>
+</tr>
+<tr>
+<td><strong>引擎元数据</strong></td>
+<td><code>internal/semantic/engine/metadata.go</code></td>
+<td>Cube/Measure/Dimension 定义</td>
+</tr>
+<tr>
+<td><strong>MCP 工具定义</strong></td>
+<td><code>internal/mcp/tools/semantic.go</code></td>
+<td>三个语义工具实现</td>
+</tr>
+<tr>
+<td><strong>MCP 服务注册</strong></td>
+<td><code>internal/mcp/server.go</code></td>
+<td>工具注册到 MCP Server</td>
+</tr>
+<tr>
+<td><strong>Agent 内置工具</strong></td>
+<td><code>internal/service/agentsdkwrap/runner.go</code></td>
+<td>Agent 直接调用路径</td>
+</tr>
+<tr>
+<td><strong>工具解析器</strong></td>
+<td><code>internal/service/agentexec/mcp_bridge.go</code></td>
+<td>工具匹配与权限校验</td>
+</tr>
+<tr>
+<td><strong>数据库模型</strong></td>
+<td><code>internal/repository/models.go</code> (L875-911)</td>
+<td>SemanticCube 表结构</td>
+</tr>
+<tr>
+<td><strong>前端 Cube 编辑</strong></td>
+<td><code>web/src/pages/semantic/CubeEdit.tsx</code></td>
+<td>Cube 管理界面</td>
+</tr>
+<tr>
+<td><strong>前端 API 调用</strong></td>
+<td><code>web/src/api/semantic.ts</code></td>
+<td>语义层 REST API 封装</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2>14. 最佳实践</h2>
+<h3>14.1 Cube 设计原则</h3>
+<ol>
+<li><strong>单一职责</strong>：每个 Cube 代表一个明确的业务主题</li>
+<li><strong>命名规范</strong>：使用英文小写 + 下划线（如 <code>order_items</code>）</li>
+<li><strong>度量命名</strong>：使用业务友好的名称（如 <code>total_revenue</code> 而非 <code>sum_amount</code>）</li>
+<li><strong>维度粒度</strong>：时间维度明确粒度（日/周/月/季/年）</li>
+</ol>
+<h3>14.2 性能优化</h3>
+<ol>
+<li><strong>预聚合</strong>：对高频查询配置 PreAggregation</li>
+<li><strong>Limit 限制</strong>：始终设置合理的 Limit，避免全表扫描</li>
+<li><strong>索引优化</strong>：在常用过滤字段上建立数据库索引</li>
+<li><strong>缓存策略</strong>：对重复查询启用查询缓存</li>
+</ol>
+<h3>14.3 安全建议</h3>
+<ol>
+<li><strong>行级安全</strong>：为敏感数据配置行级过滤器</li>
+<li><strong>权限控制</strong>：通过 MCP Token 限制可访问的 Cube</li>
+<li><strong>审计日志</strong>：定期检查查询日志，发现异常访问</li>
+<li><strong>SQL 注入防护</strong>：所有参数使用参数化查询，禁止拼接 SQL</li>
+</ol>
+<hr>
+<h2>15. 故障排查</h2>
+<h3>15.1 常见问题</h3>
+<table>
+<thead>
+<tr>
+<th>问题</th>
+<th>可能原因</th>
+<th>解决方案</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>查询返回空结果</td>
+<td>Cube 未关联数据源</td>
+<td>检查 <code>data_source_id</code> 配置</td>
+</tr>
+<tr>
+<td>SQL 语法错误</td>
+<td>Measure SQL 模板错误</td>
+<td>检查 <code>{field}</code> 占位符是否正确</td>
+</tr>
+<tr>
+<td>权限不足</td>
+<td>MCP Token 缺少 read 权限</td>
+<td>检查 Token 权限配置</td>
+</tr>
+<tr>
+<td>查询超时</td>
+<td>数据量过大或无索引</td>
+<td>添加 Limit 或优化数据库索引</td>
+</tr>
+<tr>
+<td>Cube 未加载</td>
+<td>Registry 未初始化</td>
+<td>检查 <code>semantic.default_adapter</code> 配置</td>
+</tr>
+</tbody>
+</table>
+<h3>15.2 调试方法</h3>
+<ol>
+<li><strong>查看审计日志</strong>：<code>SELECT * FROM audit_logs WHERE module = 'semantic' ORDER BY created_at DESC LIMIT 20</code></li>
+<li><strong>检查生成的 SQL</strong>：<code>semantic_query</code> 返回的 <code>sql</code> 字段包含实际执行的 SQL</li>
+<li><strong>验证 Cube 定义</strong>：通过 <code>semantic_list_cubes</code> 查看 Cube 元数据是否正确</li>
+<li><strong>测试数据源连接</strong>：在数据源管理页面测试连接是否正常</li>
+</ol>
+<hr>
+<h2>附录 A：完整查询示例</h2>
+<h3>A.1 简单聚合查询</h3>
+<p><strong>需求</strong>：查询订单总额</p>
+<pre><code class="language-json">{
+  &quot;measures&quot;: [&quot;orders.total_amount&quot;],
+  &quot;limit&quot;: 1
+}
+</code></pre>
+<p><strong>生成 SQL</strong>：</p>
+<pre><code class="language-sql">SELECT SUM(amount) AS total_amount
+FROM orders
+LIMIT 1
+</code></pre>
+<h3>A.2 带维度分组</h3>
+<p><strong>需求</strong>：按地区统计订单总额</p>
+<pre><code class="language-json">{
+  &quot;measures&quot;: [&quot;orders.total_amount&quot;],
+  &quot;dimensions&quot;: [&quot;orders.region&quot;],
+  &quot;order&quot;: [{&quot;field&quot;: &quot;orders.total_amount&quot;, &quot;direction&quot;: &quot;desc&quot;}],
+  &quot;limit&quot;: 10
+}
+</code></pre>
+<p><strong>生成 SQL</strong>：</p>
+<pre><code class="language-sql">SELECT SUM(amount) AS total_amount,
+       region_name AS region
+FROM orders
+GROUP BY region_name
+ORDER BY total_amount DESC
+LIMIT 10
+</code></pre>
+<h3>A.3 带时间过滤</h3>
+<p><strong>需求</strong>：查询 2026 年 Q3 的订单数量</p>
+<pre><code class="language-json">{
+  &quot;measures&quot;: [&quot;orders.order_count&quot;],
+  &quot;dimensions&quot;: [&quot;orders.date&quot;],
+  &quot;filters&quot;: [
+    {&quot;field&quot;: &quot;orders.date&quot;, &quot;op&quot;: &quot;gte&quot;, &quot;value&quot;: &quot;2026-07-01&quot;},
+    {&quot;field&quot;: &quot;orders.date&quot;, &quot;op&quot;: &quot;lt&quot;, &quot;value&quot;: &quot;2026-10-01&quot;}
+  ]
+}
+</code></pre>
+<p><strong>生成 SQL</strong>：</p>
+<pre><code class="language-sql">SELECT COUNT(id) AS order_count,
+       order_date AS date
+FROM orders
+WHERE order_date &gt;= '2026-07-01'
+  AND order_date &lt; '2026-10-01'
+GROUP BY order_date
+</code></pre>
+<h3>A.4 跨 Cube 关联查询</h3>
+<p><strong>需求</strong>：查询每个用户的订单总额</p>
+<pre><code class="language-json">{
+  &quot;measures&quot;: [&quot;orders.total_amount&quot;],
+  &quot;dimensions&quot;: [&quot;users.name&quot;],
+  &quot;filters&quot;: []
+}
+</code></pre>
+<p><strong>生成 SQL</strong>（假设已配置 Join）：</p>
+<pre><code class="language-sql">SELECT SUM(o.amount) AS total_amount,
+       u.name AS name
+FROM orders o
+LEFT JOIN users u ON o.user_id = u.id
+GROUP BY u.name
+</code></pre>
+<hr>
+<h2>附录 B：MCP Tool 调用示例</h2>
+<h3>B.1 Claude Desktop 配置</h3>
+<pre><code class="language-json">{
+  &quot;mcpServers&quot;: {
+    &quot;dbridge&quot;: {
+      &quot;url&quot;: &quot;http://localhost:8003/mcp&quot;,
+      &quot;headers&quot;: {
+        &quot;Authorization&quot;: &quot;Bearer db_mcp_xxxxxxxxxxxx&quot;
+      }
+    }
+  }
+}
+</code></pre>
+<h3>B.2 自然语言查询</h3>
+<p>在 Claude Desktop 中直接输入：</p>
+<pre><code>帮我分析一下上个月的销售数据，按产品类别分组，只看销售额前 10 的类别
+</code></pre>
+<p>Claude 会自动：</p>
+<ol>
+<li>调用 <code>semantic_list_cubes</code> 找到销售相关 Cube</li>
+<li>调用 <code>semantic_query</code> 执行查询</li>
+<li>用自然语言总结结果</li>
+</ol>
+<hr>
+<p><strong>文档版本</strong>: 1.0<br>
+<strong>最后更新</strong>: 2026-10-19<br>
+<strong>维护者</strong>: DBridge 开发团队</p>
+
+      </article>
+      <div class="page-nav"><a class="prev" href="agent-memory-system.html"><span class="nav-label">← 上一篇</span><span class="nav-title">DBridge Agent 记忆系统详解</span></a></div>
+    </div>
+  </main>
+</div>
+</body>
+</html>

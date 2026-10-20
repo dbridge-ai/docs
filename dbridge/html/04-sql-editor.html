@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SQL 编辑器与数据查询 - DBridge 帮助文档</title>
+
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  background: #f5f5f5;
+  color: #262626;
+  line-height: 1.7;
+  font-size: 15px;
+}
+
+.topbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 56px;
+  background: #fff;
+  border-bottom: 1px solid #e8e8e8;
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+  z-index: 100;
+}
+
+.topbar-logo {
+  font-size: 16px;
+  font-weight: 600;
+  color: #262626;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.topbar-logo .logo-icon {
+  width: 28px;
+  height: 28px;
+  background: linear-gradient(135deg, #00b96b, #00d68f);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.topbar-subtitle {
+  font-size: 13px;
+  color: #8c8c8c;
+  margin-left: 12px;
+  padding-left: 12px;
+  border-left: 1px solid #e8e8e8;
+}
+
+.layout {
+  display: flex;
+  margin-top: 56px;
+  min-height: calc(100vh - 56px);
+}
+
+.sidebar {
+  position: fixed;
+  top: 56px;
+  left: 0;
+  width: 260px;
+  height: calc(100vh - 56px);
+  background: #fff;
+  border-right: 1px solid #e8e8e8;
+  overflow-y: auto;
+  padding: 16px 0;
+}
+
+.sidebar::-webkit-scrollbar { width: 4px; }
+.sidebar::-webkit-scrollbar-thumb { background: #d9d9d9; border-radius: 2px; }
+
+.sidebar-section { margin-bottom: 8px; }
+
+.sidebar-section-title {
+  padding: 8px 20px 4px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #8c8c8c;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.sidebar-nav { list-style: none; }
+
+.sidebar-nav li a {
+  display: block;
+  padding: 6px 20px 6px 24px;
+  color: #595959;
+  text-decoration: none;
+  font-size: 14px;
+  line-height: 1.6;
+  transition: all 0.15s;
+  border-left: 3px solid transparent;
+}
+
+.sidebar-nav li a:hover {
+  color: #00b96b;
+  background: #f6ffed;
+}
+
+.sidebar-nav li.active a {
+  color: #00b96b;
+  background: #f6ffed;
+  border-left-color: #00b96b;
+  font-weight: 500;
+}
+
+.main {
+  margin-left: 260px;
+  flex: 1;
+  min-width: 0;
+}
+
+.content-wrapper {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 48px 64px 80px;
+}
+
+.content { background: #fff; padding: 40px 48px; border-radius: 8px; }
+
+.content h1 {
+  font-size: 28px;
+  font-weight: 600;
+  color: #262626;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.content h2 {
+  font-size: 22px;
+  font-weight: 600;
+  color: #262626;
+  margin-top: 40px;
+  margin-bottom: 16px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.content h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #262626;
+  margin-top: 32px;
+  margin-bottom: 12px;
+}
+
+.content h4 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #262626;
+  margin-top: 24px;
+  margin-bottom: 8px;
+}
+
+.content p {
+  margin-bottom: 16px;
+  color: #434343;
+}
+
+.content a {
+  color: #00b96b;
+  text-decoration: none;
+}
+
+.content a:hover { text-decoration: underline; }
+
+.content ul, .content ol {
+  margin-bottom: 16px;
+  padding-left: 24px;
+}
+
+.content li {
+  margin-bottom: 6px;
+  color: #434343;
+}
+
+.content blockquote {
+  margin: 16px 0;
+  padding: 12px 16px;
+  background: #f6ffed;
+  border-left: 4px solid #00b96b;
+  border-radius: 0 4px 4px 0;
+  color: #595959;
+}
+
+.content blockquote p { margin-bottom: 0; }
+
+.content code {
+  background: #f5f5f5;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 13px;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  color: #d4380d;
+}
+
+.content pre {
+  margin: 16px 0;
+  padding: 16px 20px;
+  background: #1e1e1e;
+  border-radius: 8px;
+  overflow-x: auto;
+  line-height: 1.6;
+}
+
+.content pre code {
+  background: none;
+  padding: 0;
+  color: #d4d4d4;
+  font-size: 13px;
+}
+
+.content table {
+  width: 100%;
+  margin: 16px 0;
+  border-collapse: collapse;
+  border: 1px solid #e8e8e8;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.content thead th {
+  background: #fafafa;
+  padding: 10px 14px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 14px;
+  color: #262626;
+  border-bottom: 1px solid #e8e8e8;
+}
+
+.content tbody td {
+  padding: 10px 14px;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 14px;
+  color: #434343;
+}
+
+.content tbody tr:last-child td { border-bottom: none; }
+
+.content tbody tr:nth-child(even) { background: #fafafa; }
+
+.content img {
+  max-width: 100%;
+  border-radius: 6px;
+  margin: 16px 0;
+}
+
+.content hr {
+  border: none;
+  border-top: 1px solid #f0f0f0;
+  margin: 32px 0;
+}
+
+.page-nav {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 48px;
+  padding-top: 24px;
+  border-top: 1px solid #f0f0f0;
+  gap: 16px;
+}
+
+.page-nav a {
+  display: flex;
+  flex-direction: column;
+  padding: 12px 20px;
+  border: 1px solid #e8e8e8;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: all 0.15s;
+  min-width: 0;
+  max-width: 48%;
+}
+
+.page-nav a:hover {
+  border-color: #00b96b;
+  background: #f6ffed;
+  text-decoration: none;
+}
+
+.page-nav .prev { align-items: flex-start; }
+.page-nav .next { align-items: flex-end; margin-left: auto; }
+
+.nav-label {
+  font-size: 12px;
+  color: #8c8c8c;
+  margin-bottom: 4px;
+}
+
+.nav-title {
+  font-size: 14px;
+  color: #00b96b;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+@media (max-width: 768px) {
+  .sidebar { display: none; }
+  .main { margin-left: 0; }
+  .content-wrapper { padding: 24px 16px 60px; }
+  .content h1 { font-size: 24px; }
+  .content h2 { font-size: 20px; }
+}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="topbar-logo">
+    <span class="logo-icon">D</span>
+    <span>DBridge 帮助文档</span>
+  </div>
+  <span class="topbar-subtitle">SQL 编辑器与数据查询</span>
+</div>
+<div class="layout">
+  <aside class="sidebar">
+    <div class="sidebar-section"><div class="sidebar-section-title">功能介绍</div><ul class="sidebar-nav"><li><a href="00-preface.html">DBridge Pro 产品概述</a></li><li><a href="01-quick-start.html">快速开始</a></li><li><a href="02-dashboard.html">仪表盘</a></li><li><a href="03-datasource.html">数据源管理</a></li><li class="active"><a href="04-sql-editor.html">SQL 编辑器与数据查询</a></li><li><a href="05-database-management.html">数据库管理</a></li><li><a href="06-structure-compare.html">结构对比</a></li><li><a href="07-data-sync.html">数据同步</a></li><li><a href="08-export-import.html">导出与导入</a></li><li><a href="09-sql-transpile.html">SQL 方言转换</a></li><li><a href="10-script-management.html">脚本管理</a></li><li><a href="11-report.html">报表面板</a></li><li><a href="12-ai-assistant.html">AI 助手</a></li><li><a href="13-agent.html">Agent 管理</a></li><li><a href="14-skill.html">Skill 管理</a></li><li><a href="15-mcp-tools.html">MCP 工具</a></li><li><a href="16-ai-provider.html">AI Provider 管理</a></li><li><a href="17-semantic-layer.html">语义层</a></li><li><a href="18-slow-sql.html">慢 SQL 监控</a></li><li><a href="19-inspection.html">数据库巡检</a></li><li><a href="20-server-management.html">服务器管理</a></li><li><a href="21-audit-log.html">审计日志</a></li><li><a href="22-ai-security.html">AI 安全</a></li><li><a href="23-file-storage.html">文件与存储管理</a></li><li><a href="24-im-bot.html">IM 机器人</a></li><li><a href="25-authentication.html">认证与订阅</a></li><li><a href="26-license.html">许可证管理</a></li><li><a href="27-settings.html">系统设置</a></li><li><a href="28-deployment.html">部署指南</a></li></ul></div><div class="sidebar-section"><div class="sidebar-section-title">技术文档</div><ul class="sidebar-nav"><li><a href="agent-memory-system.html">DBridge Agent 记忆系统详解</a></li><li><a href="semantic-engine-guide.html">DBridge 语义引擎与语义模型</a></li></ul></div>
+  </aside>
+  <main class="main">
+    <div class="content-wrapper">
+      <article class="content">
+        <h1>SQL 编辑器与数据查询</h1>
+<p>SQL 编辑器是 DBridge Pro 的核心功能页面，提供 SQL 编写、执行、数据浏览和编辑的一站式工作区。</p>
+<h2>页面布局</h2>
+<p>SQL 编辑器采用四区域布局：</p>
+<pre><code>┌──────────┬──────────────────────────┬──────────┐
+│          │     SQL 编辑区            │          │
+│  Schema  │   (Monaco Editor)        │   AI     │
+│   树     │                          │  助手    │
+│          ├──────────────────────────┤  面板    │
+│          │     查询结果区            │          │
+│          │   (数据表格)              │          │
+└──────────┴──────────────────────────┴──────────┘
+</code></pre>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">区域</th>
+<th style="text-align:left">说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">左侧面板</td>
+<td style="text-align:left">Schema 树形导航，可拖拽调整宽度</td>
+</tr>
+<tr>
+<td style="text-align:left">中上区域</td>
+<td style="text-align:left">Monaco SQL 编辑器，支持多标签页</td>
+</tr>
+<tr>
+<td style="text-align:left">中下区域</td>
+<td style="text-align:left">查询结果表格</td>
+</tr>
+<tr>
+<td style="text-align:left">右侧面板</td>
+<td style="text-align:left">AI 助手对话面板，可折叠</td>
+</tr>
+</tbody>
+</table>
+<h2>Schema 树</h2>
+<p>左侧面板展示当前数据源的数据库结构：</p>
+<pre><code>📁 数据库名
+  📁 schema（PostgreSQL/SQL Server）
+    📋 表名
+      📄 列名（类型）
+    📋 视图名
+</code></pre>
+<h3>树节点操作</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">操作</th>
+<th style="text-align:left">方式</th>
+<th style="text-align:left">说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">展开/折叠</td>
+<td style="text-align:left">点击箭头</td>
+<td style="text-align:left">展开数据库、schema、表结构</td>
+</tr>
+<tr>
+<td style="text-align:left">生成 SELECT</td>
+<td style="text-align:left">单击表名</td>
+<td style="text-align:left">自动生成 <code>SELECT * FROM table LIMIT 100</code></td>
+</tr>
+<tr>
+<td style="text-align:left">查看表结构</td>
+<td style="text-align:left">右键 → 查看表结构</td>
+<td style="text-align:left">打开表结构 Drawer</td>
+</tr>
+<tr>
+<td style="text-align:left">复制 DDL</td>
+<td style="text-align:left">右键 → 复制 DDL</td>
+<td style="text-align:left">复制建表语句到剪贴板</td>
+</tr>
+<tr>
+<td style="text-align:left">创建表</td>
+<td style="text-align:left">右键 → 创建表</td>
+<td style="text-align:left">打开建表向导</td>
+</tr>
+<tr>
+<td style="text-align:left">创建视图</td>
+<td style="text-align:left">右键 → 创建视图</td>
+<td style="text-align:left">打开创建视图对话框</td>
+</tr>
+<tr>
+<td style="text-align:left">查看视图定义</td>
+<td style="text-align:left">右键 → 查看视图定义</td>
+<td style="text-align:left">只读查看视图 SQL</td>
+</tr>
+</tbody>
+</table>
+<h2>SQL 编辑器</h2>
+<h3>Monaco 编辑器</h3>
+<p>基于 VS Code 同款编辑器，支持：</p>
+<ul>
+<li>SQL 语法高亮</li>
+<li>自动补全（表名、列名、关键字）</li>
+<li>多光标编辑</li>
+<li>查找/替换（Ctrl+F / Ctrl+H）</li>
+<li>代码折叠</li>
+<li>小地图</li>
+</ul>
+<h3>执行 SQL</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">操作</th>
+<th style="text-align:left">快捷键</th>
+<th style="text-align:left">说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">执行全部</td>
+<td style="text-align:left">Ctrl+Enter</td>
+<td style="text-align:left">执行编辑器中的全部 SQL</td>
+</tr>
+<tr>
+<td style="text-align:left">执行选中</td>
+<td style="text-align:left">Ctrl+Shift+Enter</td>
+<td style="text-align:left">仅执行选中的 SQL 片段</td>
+</tr>
+</tbody>
+</table>
+<h3>多标签页</h3>
+<p>编辑器支持多标签页，最多 10 个：</p>
+<ul>
+<li>每个标签页可以是 SQL 编辑、表数据浏览、或 Schema 列表</li>
+<li>超过 10 个时，自动关闭最久未使用的标签页（LRU）</li>
+<li>标签页之间独立，互不影响</li>
+</ul>
+<h2>查询结果</h2>
+<p>执行 SQL 后，结果在下方表格中展示：</p>
+<h3>结果表格功能</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">功能</th>
+<th style="text-align:left">说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">列排序</td>
+<td style="text-align:left">点击列头排序</td>
+</tr>
+<tr>
+<td style="text-align:left">列筛选</td>
+<td style="text-align:left">点击列头筛选按钮</td>
+</tr>
+<tr>
+<td style="text-align:left">分页</td>
+<td style="text-align:left">底部分页控件</td>
+</tr>
+<tr>
+<td style="text-align:left">横向滚动</td>
+<td style="text-align:left">列多时可横向滚动</td>
+</tr>
+<tr>
+<td style="text-align:left">行号</td>
+<td style="text-align:left">左侧显示行号</td>
+</tr>
+<tr>
+<td style="text-align:left">执行耗时</td>
+<td style="text-align:left">底部显示查询耗时</td>
+</tr>
+<tr>
+<td style="text-align:left">总行数</td>
+<td style="text-align:left">底部显示结果总行数</td>
+</tr>
+</tbody>
+</table>
+<h3>导出结果</h3>
+<p>查询结果可以导出：</p>
+<ol>
+<li>点击结果区域工具栏的 <strong>「导出」</strong> 按钮</li>
+<li>选择导出格式（CSV / JSON）</li>
+<li>下载文件</li>
+</ol>
+<h2>数据浏览与编辑</h2>
+<h3>浏览表数据</h3>
+<ol>
+<li>在 Schema 树中单击表名</li>
+<li>系统自动生成 <code>SELECT</code> 查询并执行</li>
+<li>结果在下方表格中展示</li>
+</ol>
+<h3>编辑表数据</h3>
+<p>在表数据视图中，可以直接编辑数据：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">操作</th>
+<th style="text-align:left">方式</th>
+<th style="text-align:left">说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">编辑单元格</td>
+<td style="text-align:left">双击单元格</td>
+<td style="text-align:left">进入编辑模式，修改后按 Enter 保存</td>
+</tr>
+<tr>
+<td style="text-align:left">新增行</td>
+<td style="text-align:left">点击 <strong>「+ 新增行」</strong></td>
+<td style="text-align:left">在表格底部添加空行</td>
+</tr>
+<tr>
+<td style="text-align:left">删除行</td>
+<td style="text-align:left">选中行 → 点击删除</td>
+<td style="text-align:left">支持批量删除</td>
+</tr>
+<tr>
+<td style="text-align:left">行详情</td>
+<td style="text-align:left">点击行展开按钮</td>
+<td style="text-align:left">查看单行全部字段</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>数据编辑操作会写入审计日志。</p>
+</blockquote>
+<h2>表结构 Drawer</h2>
+<p>双击表名或右键选择「查看表结构」，打开表结构面板：</p>
+<h3>标签页</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">标签页</th>
+<th style="text-align:left">内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">字段</td>
+<td style="text-align:left">列名、类型、长度、可空、默认值、注释</td>
+</tr>
+<tr>
+<td style="text-align:left">索引</td>
+<td style="text-align:left">索引名、类型、包含列</td>
+</tr>
+<tr>
+<td style="text-align:left">约束</td>
+<td style="text-align:left">约束名、类型、引用关系</td>
+</tr>
+<tr>
+<td style="text-align:left">建表语句</td>
+<td style="text-align:left">DDL 语句（Monaco 只读展示）</td>
+</tr>
+<tr>
+<td style="text-align:left">表信息</td>
+<td style="text-align:left">引擎、字符集、排序规则、行数、创建时间</td>
+</tr>
+</tbody>
+</table>
+<h3>结构编辑（admin/operator）</h3>
+<p>有权限的用户可以在表结构 Drawer 中直接修改：</p>
+<ul>
+<li><strong>新增列</strong> — 指定列名、类型、长度、可空、默认值、注释</li>
+<li><strong>编辑列</strong> — 修改列属性</li>
+<li><strong>删除列</strong> — 删除列（高危操作，需二次确认）</li>
+<li><strong>修改表注释</strong> — 修改表的注释信息</li>
+</ul>
+<p>修改操作会先生成 ALTER DDL 预览，确认后再执行。</p>
+<h2>脚本文件</h2>
+<p>SQL 编辑器集成了脚本文件管理：</p>
+<ol>
+<li>在编辑器中编写的 SQL 可以保存为脚本文件</li>
+<li>脚本文件按目录树组织</li>
+<li>支持自动保存（1 秒防抖）</li>
+<li>详见 <a href="10-script-management.md">脚本管理</a> 章节</li>
+</ol>
+<h2>AI 助手面板</h2>
+<p>右侧 AI 助手面板可以直接在当前查询上下文中对话：</p>
+<ol>
+<li>选择数据源和 Schema</li>
+<li>输入自然语言问题</li>
+<li>AI 生成 SQL 并可直接执行</li>
+<li>详见 <a href="12-ai-assistant.md">AI 助手</a> 章节</li>
+</ol>
+<h2>使用技巧</h2>
+<h3>高效查询</h3>
+<ul>
+<li>在 Schema 树中双击表名，快速生成 SELECT 语句</li>
+<li>选中部分 SQL 后按 Ctrl+Shift+Enter，只执行选中部分</li>
+<li>使用 Ctrl+Space 触发自动补全</li>
+</ul>
+<h3>多数据源切换</h3>
+<p>在页面顶部可以切换数据源，切换后 Schema 树自动刷新。</p>
+<h3>大结果集处理</h3>
+<ul>
+<li>系统默认对 SELECT 查询添加 LIMIT 限制</li>
+<li>如需查看全量数据，手动编写不带 LIMIT 的 SQL</li>
+<li>注意：大结果集可能影响浏览器性能</li>
+</ul>
+
+      </article>
+      <div class="page-nav"><a class="prev" href="03-datasource.html"><span class="nav-label">← 上一篇</span><span class="nav-title">数据源管理</span></a><a class="next" href="05-database-management.html"><span class="nav-label">下一篇 →</span><span class="nav-title">数据库管理</span></a></div>
+    </div>
+  </main>
+</div>
+</body>
+</html>

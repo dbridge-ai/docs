@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>数据源管理 - DBridge 帮助文档</title>
+
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  background: #f5f5f5;
+  color: #262626;
+  line-height: 1.7;
+  font-size: 15px;
+}
+
+.topbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 56px;
+  background: #fff;
+  border-bottom: 1px solid #e8e8e8;
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+  z-index: 100;
+}
+
+.topbar-logo {
+  font-size: 16px;
+  font-weight: 600;
+  color: #262626;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.topbar-logo .logo-icon {
+  width: 28px;
+  height: 28px;
+  background: linear-gradient(135deg, #00b96b, #00d68f);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.topbar-subtitle {
+  font-size: 13px;
+  color: #8c8c8c;
+  margin-left: 12px;
+  padding-left: 12px;
+  border-left: 1px solid #e8e8e8;
+}
+
+.layout {
+  display: flex;
+  margin-top: 56px;
+  min-height: calc(100vh - 56px);
+}
+
+.sidebar {
+  position: fixed;
+  top: 56px;
+  left: 0;
+  width: 260px;
+  height: calc(100vh - 56px);
+  background: #fff;
+  border-right: 1px solid #e8e8e8;
+  overflow-y: auto;
+  padding: 16px 0;
+}
+
+.sidebar::-webkit-scrollbar { width: 4px; }
+.sidebar::-webkit-scrollbar-thumb { background: #d9d9d9; border-radius: 2px; }
+
+.sidebar-section { margin-bottom: 8px; }
+
+.sidebar-section-title {
+  padding: 8px 20px 4px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #8c8c8c;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.sidebar-nav { list-style: none; }
+
+.sidebar-nav li a {
+  display: block;
+  padding: 6px 20px 6px 24px;
+  color: #595959;
+  text-decoration: none;
+  font-size: 14px;
+  line-height: 1.6;
+  transition: all 0.15s;
+  border-left: 3px solid transparent;
+}
+
+.sidebar-nav li a:hover {
+  color: #00b96b;
+  background: #f6ffed;
+}
+
+.sidebar-nav li.active a {
+  color: #00b96b;
+  background: #f6ffed;
+  border-left-color: #00b96b;
+  font-weight: 500;
+}
+
+.main {
+  margin-left: 260px;
+  flex: 1;
+  min-width: 0;
+}
+
+.content-wrapper {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 48px 64px 80px;
+}
+
+.content { background: #fff; padding: 40px 48px; border-radius: 8px; }
+
+.content h1 {
+  font-size: 28px;
+  font-weight: 600;
+  color: #262626;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.content h2 {
+  font-size: 22px;
+  font-weight: 600;
+  color: #262626;
+  margin-top: 40px;
+  margin-bottom: 16px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.content h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #262626;
+  margin-top: 32px;
+  margin-bottom: 12px;
+}
+
+.content h4 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #262626;
+  margin-top: 24px;
+  margin-bottom: 8px;
+}
+
+.content p {
+  margin-bottom: 16px;
+  color: #434343;
+}
+
+.content a {
+  color: #00b96b;
+  text-decoration: none;
+}
+
+.content a:hover { text-decoration: underline; }
+
+.content ul, .content ol {
+  margin-bottom: 16px;
+  padding-left: 24px;
+}
+
+.content li {
+  margin-bottom: 6px;
+  color: #434343;
+}
+
+.content blockquote {
+  margin: 16px 0;
+  padding: 12px 16px;
+  background: #f6ffed;
+  border-left: 4px solid #00b96b;
+  border-radius: 0 4px 4px 0;
+  color: #595959;
+}
+
+.content blockquote p { margin-bottom: 0; }
+
+.content code {
+  background: #f5f5f5;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 13px;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  color: #d4380d;
+}
+
+.content pre {
+  margin: 16px 0;
+  padding: 16px 20px;
+  background: #1e1e1e;
+  border-radius: 8px;
+  overflow-x: auto;
+  line-height: 1.6;
+}
+
+.content pre code {
+  background: none;
+  padding: 0;
+  color: #d4d4d4;
+  font-size: 13px;
+}
+
+.content table {
+  width: 100%;
+  margin: 16px 0;
+  border-collapse: collapse;
+  border: 1px solid #e8e8e8;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.content thead th {
+  background: #fafafa;
+  padding: 10px 14px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 14px;
+  color: #262626;
+  border-bottom: 1px solid #e8e8e8;
+}
+
+.content tbody td {
+  padding: 10px 14px;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 14px;
+  color: #434343;
+}
+
+.content tbody tr:last-child td { border-bottom: none; }
+
+.content tbody tr:nth-child(even) { background: #fafafa; }
+
+.content img {
+  max-width: 100%;
+  border-radius: 6px;
+  margin: 16px 0;
+}
+
+.content hr {
+  border: none;
+  border-top: 1px solid #f0f0f0;
+  margin: 32px 0;
+}
+
+.page-nav {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 48px;
+  padding-top: 24px;
+  border-top: 1px solid #f0f0f0;
+  gap: 16px;
+}
+
+.page-nav a {
+  display: flex;
+  flex-direction: column;
+  padding: 12px 20px;
+  border: 1px solid #e8e8e8;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: all 0.15s;
+  min-width: 0;
+  max-width: 48%;
+}
+
+.page-nav a:hover {
+  border-color: #00b96b;
+  background: #f6ffed;
+  text-decoration: none;
+}
+
+.page-nav .prev { align-items: flex-start; }
+.page-nav .next { align-items: flex-end; margin-left: auto; }
+
+.nav-label {
+  font-size: 12px;
+  color: #8c8c8c;
+  margin-bottom: 4px;
+}
+
+.nav-title {
+  font-size: 14px;
+  color: #00b96b;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+@media (max-width: 768px) {
+  .sidebar { display: none; }
+  .main { margin-left: 0; }
+  .content-wrapper { padding: 24px 16px 60px; }
+  .content h1 { font-size: 24px; }
+  .content h2 { font-size: 20px; }
+}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="topbar-logo">
+    <span class="logo-icon">D</span>
+    <span>DBridge 帮助文档</span>
+  </div>
+  <span class="topbar-subtitle">数据源管理</span>
+</div>
+<div class="layout">
+  <aside class="sidebar">
+    <div class="sidebar-section"><div class="sidebar-section-title">功能介绍</div><ul class="sidebar-nav"><li><a href="00-preface.html">DBridge Pro 产品概述</a></li><li><a href="01-quick-start.html">快速开始</a></li><li><a href="02-dashboard.html">仪表盘</a></li><li class="active"><a href="03-datasource.html">数据源管理</a></li><li><a href="04-sql-editor.html">SQL 编辑器与数据查询</a></li><li><a href="05-database-management.html">数据库管理</a></li><li><a href="06-structure-compare.html">结构对比</a></li><li><a href="07-data-sync.html">数据同步</a></li><li><a href="08-export-import.html">导出与导入</a></li><li><a href="09-sql-transpile.html">SQL 方言转换</a></li><li><a href="10-script-management.html">脚本管理</a></li><li><a href="11-report.html">报表面板</a></li><li><a href="12-ai-assistant.html">AI 助手</a></li><li><a href="13-agent.html">Agent 管理</a></li><li><a href="14-skill.html">Skill 管理</a></li><li><a href="15-mcp-tools.html">MCP 工具</a></li><li><a href="16-ai-provider.html">AI Provider 管理</a></li><li><a href="17-semantic-layer.html">语义层</a></li><li><a href="18-slow-sql.html">慢 SQL 监控</a></li><li><a href="19-inspection.html">数据库巡检</a></li><li><a href="20-server-management.html">服务器管理</a></li><li><a href="21-audit-log.html">审计日志</a></li><li><a href="22-ai-security.html">AI 安全</a></li><li><a href="23-file-storage.html">文件与存储管理</a></li><li><a href="24-im-bot.html">IM 机器人</a></li><li><a href="25-authentication.html">认证与订阅</a></li><li><a href="26-license.html">许可证管理</a></li><li><a href="27-settings.html">系统设置</a></li><li><a href="28-deployment.html">部署指南</a></li></ul></div><div class="sidebar-section"><div class="sidebar-section-title">技术文档</div><ul class="sidebar-nav"><li><a href="agent-memory-system.html">DBridge Agent 记忆系统详解</a></li><li><a href="semantic-engine-guide.html">DBridge 语义引擎与语义模型</a></li></ul></div>
+  </aside>
+  <main class="main">
+    <div class="content-wrapper">
+      <article class="content">
+        <h1>数据源管理</h1>
+<p>数据源是 DBridge Pro 连接外部数据库的配置。所有数据库操作都基于已配置的数据源。</p>
+<h2>功能概述</h2>
+<ul>
+<li>创建、编辑、删除数据库连接</li>
+<li>支持 7 种数据库类型</li>
+<li>SSH 隧道连接</li>
+<li>SSL/TLS 加密连接</li>
+<li>连接测试</li>
+<li>数据源导入/导出</li>
+<li>标签和环境标记</li>
+</ul>
+<h2>支持的数据源类型</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">数据库</th>
+<th style="text-align:left">连接方式</th>
+<th style="text-align:left">特殊配置</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">MySQL</td>
+<td style="text-align:left">TCP</td>
+<td style="text-align:left">标准连接参数</td>
+</tr>
+<tr>
+<td style="text-align:left">MariaDB</td>
+<td style="text-align:left">TCP</td>
+<td style="text-align:left">同 MySQL</td>
+</tr>
+<tr>
+<td style="text-align:left">OceanBase</td>
+<td style="text-align:left">TCP</td>
+<td style="text-align:left">同 MySQL</td>
+</tr>
+<tr>
+<td style="text-align:left">PostgreSQL</td>
+<td style="text-align:left">TCP</td>
+<td style="text-align:left">SSL Mode</td>
+</tr>
+<tr>
+<td style="text-align:left">SQL Server</td>
+<td style="text-align:left">TCP</td>
+<td style="text-align:left">标准连接参数</td>
+</tr>
+<tr>
+<td style="text-align:left">Oracle</td>
+<td style="text-align:left">TCP</td>
+<td style="text-align:left">Service Name / SID、连接模式、角色</td>
+</tr>
+<tr>
+<td style="text-align:left">SQLite</td>
+<td style="text-align:left">文件</td>
+<td style="text-align:left">文件上传或存储浏览</td>
+</tr>
+</tbody>
+</table>
+<h2>创建数据源</h2>
+<h3>步骤</h3>
+<ol>
+<li>进入「数据源管理」页面</li>
+<li>点击 <strong>「新建」</strong> 按钮</li>
+<li>填写连接信息（见下方说明）</li>
+<li>点击 <strong>「测试连接」</strong> 确认连通性</li>
+<li>点击 <strong>「确定」</strong> 保存</li>
+</ol>
+<h3>连接信息</h3>
+<p>创建数据源的弹窗包含 4 个标签页：</p>
+<h4>连接信息标签页</h4>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">字段</th>
+<th style="text-align:left">说明</th>
+<th style="text-align:left">必填</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">名称</td>
+<td style="text-align:left">数据源的显示名称</td>
+<td style="text-align:left">是</td>
+</tr>
+<tr>
+<td style="text-align:left">类型</td>
+<td style="text-align:left">数据库类型（MySQL / PostgreSQL / Oracle / SQL Server / SQLite）</td>
+<td style="text-align:left">是</td>
+</tr>
+<tr>
+<td style="text-align:left">主机</td>
+<td style="text-align:left">数据库服务器地址（SQLite 除外）</td>
+<td style="text-align:left">是</td>
+</tr>
+<tr>
+<td style="text-align:left">端口</td>
+<td style="text-align:left">数据库端口号（SQLite 除外）</td>
+<td style="text-align:left">是</td>
+</tr>
+<tr>
+<td style="text-align:left">数据库</td>
+<td style="text-align:left">数据库名称（SQLite 为文件路径）</td>
+<td style="text-align:left">是</td>
+</tr>
+<tr>
+<td style="text-align:left">用户名</td>
+<td style="text-align:left">数据库用户名（SQLite 除外）</td>
+<td style="text-align:left">是</td>
+</tr>
+<tr>
+<td style="text-align:left">密码</td>
+<td style="text-align:left">数据库密码（AES-256-GCM 加密存储）</td>
+<td style="text-align:left">是</td>
+</tr>
+</tbody>
+</table>
+<h4>TLS/SSL 标签页</h4>
+<p>用于配置加密连接：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">字段</th>
+<th style="text-align:left">说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">客户端证书</td>
+<td style="text-align:left">TLS 客户端证书文件内容</td>
+</tr>
+<tr>
+<td style="text-align:left">客户端密钥</td>
+<td style="text-align:left">TLS 客户端私钥文件内容</td>
+</tr>
+<tr>
+<td style="text-align:left">根证书</td>
+<td style="text-align:left">CA 根证书文件内容</td>
+</tr>
+</tbody>
+</table>
+<h4>SSH 隧道标签页</h4>
+<p>当数据库服务器不能直接访问时，可以通过 SSH 隧道连接：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">字段</th>
+<th style="text-align:left">说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">SSH 主机</td>
+<td style="text-align:left">跳板机地址</td>
+</tr>
+<tr>
+<td style="text-align:left">SSH 端口</td>
+<td style="text-align:left">SSH 端口（默认 22）</td>
+</tr>
+<tr>
+<td style="text-align:left">SSH 用户名</td>
+<td style="text-align:left">登录用户名</td>
+</tr>
+<tr>
+<td style="text-align:left">认证方式</td>
+<td style="text-align:left">密码 / 密钥 / 密钥+密码 / Agent / 无</td>
+</tr>
+<tr>
+<td style="text-align:left">超时时间</td>
+<td style="text-align:left">连接超时（秒）</td>
+</tr>
+</tbody>
+</table>
+<h4>高级标签页</h4>
+<p>额外的驱动参数，以 JSON 格式配置。</p>
+<h3>Oracle 特殊配置</h3>
+<p>Oracle 数据源有额外的连接选项：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">字段</th>
+<th style="text-align:left">选项</th>
+<th style="text-align:left">说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">连接模式</td>
+<td style="text-align:left">Service Name / SID</td>
+<td style="text-align:left">Oracle 连接标识类型</td>
+</tr>
+<tr>
+<td style="text-align:left">角色</td>
+<td style="text-align:left">Default / SYSDBA / SYSOPER</td>
+<td style="text-align:left">连接权限级别</td>
+</tr>
+</tbody>
+</table>
+<h3>SQLite 特殊配置</h3>
+<p>SQLite 数据源有两种配置方式：</p>
+<ul>
+<li><strong>文件上传</strong> — 直接上传 <code>.db</code> / <code>.sqlite</code> 文件</li>
+<li><strong>存储浏览</strong> — 从已配置的文件存储中选择</li>
+</ul>
+<h2>数据源列表</h2>
+<p>列表展示所有已配置的数据源，包含以下信息：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">列</th>
+<th style="text-align:left">说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">名称</td>
+<td style="text-align:left">数据源名称</td>
+</tr>
+<tr>
+<td style="text-align:left">类型</td>
+<td style="text-align:left">数据库类型（彩色标签）</td>
+</tr>
+<tr>
+<td style="text-align:left">主机:端口</td>
+<td style="text-align:left">连接地址</td>
+</tr>
+<tr>
+<td style="text-align:left">数据库</td>
+<td style="text-align:left">数据库名</td>
+</tr>
+<tr>
+<td style="text-align:left">用户名</td>
+<td style="text-align:left">连接用户名</td>
+</tr>
+<tr>
+<td style="text-align:left">环境</td>
+<td style="text-align:left">dev / test / prod 标记</td>
+</tr>
+<tr>
+<td style="text-align:left">标签</td>
+<td style="text-align:left">功能标签（database_management / data_query）</td>
+</tr>
+<tr>
+<td style="text-align:left">操作</td>
+<td style="text-align:left">查询、编辑、删除</td>
+</tr>
+</tbody>
+</table>
+<h3>筛选与搜索</h3>
+<ul>
+<li><strong>搜索框</strong> — 按名称搜索</li>
+<li><strong>标签筛选</strong> — 按功能标签过滤</li>
+<li><strong>环境筛选</strong> — 按环境标记过滤</li>
+</ul>
+<h2>连接测试</h2>
+<p>在创建/编辑弹窗中，点击 <strong>「测试连接」</strong> 按钮：</p>
+<ul>
+<li>成功 — 显示绿色提示 “连接成功”</li>
+<li>失败 — 显示红色错误信息和具体原因</li>
+</ul>
+<p>测试时会验证：</p>
+<ul>
+<li>网络连通性</li>
+<li>用户名/密码正确性</li>
+<li>数据库是否存在</li>
+<li>SSH 隧道可用性（如配置了 SSH）</li>
+</ul>
+<h2>标签与环境</h2>
+<h3>功能标签</h3>
+<p>为数据源添加功能标签，控制其在系统中的可见范围：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">标签</th>
+<th style="text-align:left">说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">database_management</td>
+<td style="text-align:left">在数据库管理页面可见</td>
+</tr>
+<tr>
+<td style="text-align:left">data_query</td>
+<td style="text-align:left">在 SQL 编辑器中可见</td>
+</tr>
+</tbody>
+</table>
+<h3>环境标记</h3>
+<p>标记数据源所属环境，便于区分：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">环境</th>
+<th style="text-align:left">颜色</th>
+<th style="text-align:left">说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">dev</td>
+<td style="text-align:left">绿色</td>
+<td style="text-align:left">开发环境</td>
+</tr>
+<tr>
+<td style="text-align:left">test</td>
+<td style="text-align:left">黄色</td>
+<td style="text-align:left">测试环境</td>
+</tr>
+<tr>
+<td style="text-align:left">prod</td>
+<td style="text-align:left">红色</td>
+<td style="text-align:left">生产环境</td>
+</tr>
+</tbody>
+</table>
+<h2>导入/导出</h2>
+<h3>导出数据源</h3>
+<p>将数据源配置导出为 JSON 文件（密码加密保护）：</p>
+<ol>
+<li>点击工具栏 <strong>「导出」</strong> 按钮</li>
+<li>选择要导出的数据源</li>
+<li>设置导出密码</li>
+<li>下载 JSON 文件</li>
+</ol>
+<h3>导入数据源</h3>
+<p>从 JSON 文件导入数据源配置：</p>
+<ol>
+<li>点击工具栏 <strong>「导入」</strong> 按钮</li>
+<li>选择 JSON 文件</li>
+<li>输入导入密码</li>
+<li>确认导入</li>
+</ol>
+<blockquote>
+<p>导入/导出功能适合在团队间共享数据源配置，或在不同环境间迁移。</p>
+</blockquote>
+<h2>密码安全</h2>
+<p>数据源密码采用 <strong>AES-256-GCM</strong> 对称加密：</p>
+<ul>
+<li>存储时加密 — 密码在写入数据库前加密</li>
+<li>API 不返回 — 接口响应中永远不包含密码字段</li>
+<li>密钥管理 — 加密密钥通过环境变量 <code>DBRIDGE_CRYPTO_KEY</code> 配置</li>
+</ul>
+<h2>快速操作</h2>
+<p>在数据源列表中，每行提供快捷操作：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">操作</th>
+<th style="text-align:left">说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">查询</td>
+<td style="text-align:left">直接在 SQL 编辑器中打开该数据源</td>
+</tr>
+<tr>
+<td style="text-align:left">编辑</td>
+<td style="text-align:left">修改数据源配置</td>
+</tr>
+<tr>
+<td style="text-align:left">删除</td>
+<td style="text-align:left">删除数据源（需确认）</td>
+</tr>
+</tbody>
+</table>
+
+      </article>
+      <div class="page-nav"><a class="prev" href="02-dashboard.html"><span class="nav-label">← 上一篇</span><span class="nav-title">仪表盘</span></a><a class="next" href="04-sql-editor.html"><span class="nav-label">下一篇 →</span><span class="nav-title">SQL 编辑器与数据查询</span></a></div>
+    </div>
+  </main>
+</div>
+</body>
+</html>

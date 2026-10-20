@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>认证与订阅 - DBridge 帮助文档</title>
+
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  background: #f5f5f5;
+  color: #262626;
+  line-height: 1.7;
+  font-size: 15px;
+}
+
+.topbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 56px;
+  background: #fff;
+  border-bottom: 1px solid #e8e8e8;
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+  z-index: 100;
+}
+
+.topbar-logo {
+  font-size: 16px;
+  font-weight: 600;
+  color: #262626;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.topbar-logo .logo-icon {
+  width: 28px;
+  height: 28px;
+  background: linear-gradient(135deg, #00b96b, #00d68f);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.topbar-subtitle {
+  font-size: 13px;
+  color: #8c8c8c;
+  margin-left: 12px;
+  padding-left: 12px;
+  border-left: 1px solid #e8e8e8;
+}
+
+.layout {
+  display: flex;
+  margin-top: 56px;
+  min-height: calc(100vh - 56px);
+}
+
+.sidebar {
+  position: fixed;
+  top: 56px;
+  left: 0;
+  width: 260px;
+  height: calc(100vh - 56px);
+  background: #fff;
+  border-right: 1px solid #e8e8e8;
+  overflow-y: auto;
+  padding: 16px 0;
+}
+
+.sidebar::-webkit-scrollbar { width: 4px; }
+.sidebar::-webkit-scrollbar-thumb { background: #d9d9d9; border-radius: 2px; }
+
+.sidebar-section { margin-bottom: 8px; }
+
+.sidebar-section-title {
+  padding: 8px 20px 4px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #8c8c8c;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.sidebar-nav { list-style: none; }
+
+.sidebar-nav li a {
+  display: block;
+  padding: 6px 20px 6px 24px;
+  color: #595959;
+  text-decoration: none;
+  font-size: 14px;
+  line-height: 1.6;
+  transition: all 0.15s;
+  border-left: 3px solid transparent;
+}
+
+.sidebar-nav li a:hover {
+  color: #00b96b;
+  background: #f6ffed;
+}
+
+.sidebar-nav li.active a {
+  color: #00b96b;
+  background: #f6ffed;
+  border-left-color: #00b96b;
+  font-weight: 500;
+}
+
+.main {
+  margin-left: 260px;
+  flex: 1;
+  min-width: 0;
+}
+
+.content-wrapper {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 48px 64px 80px;
+}
+
+.content { background: #fff; padding: 40px 48px; border-radius: 8px; }
+
+.content h1 {
+  font-size: 28px;
+  font-weight: 600;
+  color: #262626;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.content h2 {
+  font-size: 22px;
+  font-weight: 600;
+  color: #262626;
+  margin-top: 40px;
+  margin-bottom: 16px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.content h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #262626;
+  margin-top: 32px;
+  margin-bottom: 12px;
+}
+
+.content h4 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #262626;
+  margin-top: 24px;
+  margin-bottom: 8px;
+}
+
+.content p {
+  margin-bottom: 16px;
+  color: #434343;
+}
+
+.content a {
+  color: #00b96b;
+  text-decoration: none;
+}
+
+.content a:hover { text-decoration: underline; }
+
+.content ul, .content ol {
+  margin-bottom: 16px;
+  padding-left: 24px;
+}
+
+.content li {
+  margin-bottom: 6px;
+  color: #434343;
+}
+
+.content blockquote {
+  margin: 16px 0;
+  padding: 12px 16px;
+  background: #f6ffed;
+  border-left: 4px solid #00b96b;
+  border-radius: 0 4px 4px 0;
+  color: #595959;
+}
+
+.content blockquote p { margin-bottom: 0; }
+
+.content code {
+  background: #f5f5f5;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 13px;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  color: #d4380d;
+}
+
+.content pre {
+  margin: 16px 0;
+  padding: 16px 20px;
+  background: #1e1e1e;
+  border-radius: 8px;
+  overflow-x: auto;
+  line-height: 1.6;
+}
+
+.content pre code {
+  background: none;
+  padding: 0;
+  color: #d4d4d4;
+  font-size: 13px;
+}
+
+.content table {
+  width: 100%;
+  margin: 16px 0;
+  border-collapse: collapse;
+  border: 1px solid #e8e8e8;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.content thead th {
+  background: #fafafa;
+  padding: 10px 14px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 14px;
+  color: #262626;
+  border-bottom: 1px solid #e8e8e8;
+}
+
+.content tbody td {
+  padding: 10px 14px;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 14px;
+  color: #434343;
+}
+
+.content tbody tr:last-child td { border-bottom: none; }
+
+.content tbody tr:nth-child(even) { background: #fafafa; }
+
+.content img {
+  max-width: 100%;
+  border-radius: 6px;
+  margin: 16px 0;
+}
+
+.content hr {
+  border: none;
+  border-top: 1px solid #f0f0f0;
+  margin: 32px 0;
+}
+
+.page-nav {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 48px;
+  padding-top: 24px;
+  border-top: 1px solid #f0f0f0;
+  gap: 16px;
+}
+
+.page-nav a {
+  display: flex;
+  flex-direction: column;
+  padding: 12px 20px;
+  border: 1px solid #e8e8e8;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: all 0.15s;
+  min-width: 0;
+  max-width: 48%;
+}
+
+.page-nav a:hover {
+  border-color: #00b96b;
+  background: #f6ffed;
+  text-decoration: none;
+}
+
+.page-nav .prev { align-items: flex-start; }
+.page-nav .next { align-items: flex-end; margin-left: auto; }
+
+.nav-label {
+  font-size: 12px;
+  color: #8c8c8c;
+  margin-bottom: 4px;
+}
+
+.nav-title {
+  font-size: 14px;
+  color: #00b96b;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+@media (max-width: 768px) {
+  .sidebar { display: none; }
+  .main { margin-left: 0; }
+  .content-wrapper { padding: 24px 16px 60px; }
+  .content h1 { font-size: 24px; }
+  .content h2 { font-size: 20px; }
+}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="topbar-logo">
+    <span class="logo-icon">D</span>
+    <span>DBridge 帮助文档</span>
+  </div>
+  <span class="topbar-subtitle">认证与订阅</span>
+</div>
+<div class="layout">
+  <aside class="sidebar">
+    <div class="sidebar-section"><div class="sidebar-section-title">功能介绍</div><ul class="sidebar-nav"><li><a href="00-preface.html">DBridge Pro 产品概述</a></li><li><a href="01-quick-start.html">快速开始</a></li><li><a href="02-dashboard.html">仪表盘</a></li><li><a href="03-datasource.html">数据源管理</a></li><li><a href="04-sql-editor.html">SQL 编辑器与数据查询</a></li><li><a href="05-database-management.html">数据库管理</a></li><li><a href="06-structure-compare.html">结构对比</a></li><li><a href="07-data-sync.html">数据同步</a></li><li><a href="08-export-import.html">导出与导入</a></li><li><a href="09-sql-transpile.html">SQL 方言转换</a></li><li><a href="10-script-management.html">脚本管理</a></li><li><a href="11-report.html">报表面板</a></li><li><a href="12-ai-assistant.html">AI 助手</a></li><li><a href="13-agent.html">Agent 管理</a></li><li><a href="14-skill.html">Skill 管理</a></li><li><a href="15-mcp-tools.html">MCP 工具</a></li><li><a href="16-ai-provider.html">AI Provider 管理</a></li><li><a href="17-semantic-layer.html">语义层</a></li><li><a href="18-slow-sql.html">慢 SQL 监控</a></li><li><a href="19-inspection.html">数据库巡检</a></li><li><a href="20-server-management.html">服务器管理</a></li><li><a href="21-audit-log.html">审计日志</a></li><li><a href="22-ai-security.html">AI 安全</a></li><li><a href="23-file-storage.html">文件与存储管理</a></li><li><a href="24-im-bot.html">IM 机器人</a></li><li class="active"><a href="25-authentication.html">认证与订阅</a></li><li><a href="26-license.html">许可证管理</a></li><li><a href="27-settings.html">系统设置</a></li><li><a href="28-deployment.html">部署指南</a></li></ul></div><div class="sidebar-section"><div class="sidebar-section-title">技术文档</div><ul class="sidebar-nav"><li><a href="agent-memory-system.html">DBridge Agent 记忆系统详解</a></li><li><a href="semantic-engine-guide.html">DBridge 语义引擎与语义模型</a></li></ul></div>
+  </aside>
+  <main class="main">
+    <div class="content-wrapper">
+      <article class="content">
+        <h1>认证与订阅</h1>
+<h2>1. 功能概述</h2>
+<p>DBridge 支持两种认证模式：OAuth 第三方认证（用户中心）和本地账号密码认证。同时提供订阅管理功能，展示当前订阅状态、权益信息和网络连接状态。</p>
+<p><strong>核心能力</strong>：</p>
+<ul>
+<li>OAuth 第三方认证（支持多个 Provider）</li>
+<li>本地账号密码认证</li>
+<li>订阅状态查看</li>
+<li>权益信息查询</li>
+<li>网络连接状态监控</li>
+</ul>
+<hr>
+<h2>2. 登录</h2>
+<h3>2.1 登录页面</h3>
+<p>访问系统地址后，未登录用户会自动跳转到登录页面。登录页面根据系统配置显示不同的登录方式。</p>
+<h3>2.2 OAuth 登录</h3>
+<p>当系统配置了 OAuth Provider 时，登录页面显示 OAuth 标签页。</p>
+<p><strong>操作步骤</strong>：</p>
+<ol>
+<li>在登录页面切换到 <strong>OAuth 登录</strong> 标签页</li>
+<li>页面显示可用的 OAuth Provider 按钮（如 GitHub、Google 等）</li>
+<li>点击对应的 Provider 按钮</li>
+<li>浏览器跳转到 Provider 的授权页面</li>
+<li>用户授权后，自动跳转回 DBridge 并完成登录</li>
+</ol>
+<blockquote>
+<p><strong>提示</strong>：如果同时配置了 OAuth 和本地登录，页面底部会提示可以切换到本地登录。</p>
+</blockquote>
+<h3>2.3 本地账号登录</h3>
+<p>当系统允许本地登录时，登录页面显示本地登录标签页。</p>
+<p><strong>操作步骤</strong>：</p>
+<ol>
+<li>在登录页面切换到 <strong>本地登录</strong> 标签页</li>
+<li>输入用户名和密码</li>
+<li>点击 <strong>登录</strong> 按钮</li>
+</ol>
+<blockquote>
+<p><strong>说明</strong>：本地账号由 dbridge-desktop 的安全设置管理。</p>
+</blockquote>
+<h3>2.4 登录错误处理</h3>
+<table>
+<thead>
+<tr>
+<th>错误状态</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>missing_code</td>
+<td>OAuth 回调缺少授权码</td>
+</tr>
+<tr>
+<td>device_limit_reached</td>
+<td>设备数量已达上限，需要管理设备</td>
+</tr>
+<tr>
+<td>login_failed</td>
+<td>登录失败，请检查凭据</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2>3. 认证模式配置</h2>
+<p>认证模式在系统配置文件 <code>config.yaml</code> 中设置：</p>
+<pre><code class="language-yaml">subscription:
+  enabled: true
+  auth_mode: &quot;usercenter&quot;  # &quot;password&quot; 或 &quot;usercenter&quot;
+  base_url: &quot;http://localhost:8080&quot;
+  app_id: &quot;your_app_id&quot;
+  product_id: &quot;your_product_id&quot;
+</code></pre>
+<h3>3.1 auth_mode 说明</h3>
+<table>
+<thead>
+<tr>
+<th>模式</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>usercenter</code></td>
+<td>使用用户中心 OAuth 认证，支持多 Provider</td>
+</tr>
+<tr>
+<td><code>password</code></td>
+<td>使用本地账号密码认证</td>
+</tr>
+</tbody>
+</table>
+<h3>3.2 认证流程</h3>
+<p><strong>OAuth 模式</strong>：</p>
+<ol>
+<li>前端请求 <code>/api/v1/auth/login-config</code> 获取可用 Provider</li>
+<li>点击 Provider 按钮，请求 <code>/api/v1/auth/oauth/start?provider=xxx</code></li>
+<li>后端返回 <code>authorize_url</code>，前端跳转</li>
+<li>用户授权后回调到 <code>/auth/callback</code></li>
+<li>前端携带 code 完成后端验证和登录</li>
+</ol>
+<p><strong>本地模式</strong>：</p>
+<ol>
+<li>前端提交用户名和密码到 <code>/api/v1/auth/local-login</code></li>
+<li>后端验证凭据</li>
+<li>返回 JWT Token</li>
+</ol>
+<hr>
+<h2>4. 订阅管理</h2>
+<h3>4.1 进入订阅页面</h3>
+<p>在左侧导航栏中，点击 <strong>订阅管理</strong> 进入订阅页面。</p>
+<h3>4.2 订阅状态</h3>
+<p>页面展示当前订阅的详细信息：</p>
+<table>
+<thead>
+<tr>
+<th>字段</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>状态</td>
+<td>订阅状态标签</td>
+</tr>
+<tr>
+<td>到期日期</td>
+<td>订阅到期时间</td>
+</tr>
+<tr>
+<td>有效到期</td>
+<td>实际有效到期时间（含宽限期）</td>
+</tr>
+<tr>
+<td>宽限期</td>
+<td>宽限期信息（如适用）</td>
+</tr>
+<tr>
+<td>只读模式</td>
+<td>是否处于只读模式</td>
+</tr>
+<tr>
+<td>网络状态</td>
+<td>在线/离线状态，最后同步时间</td>
+</tr>
+</tbody>
+</table>
+<h3>4.3 订阅状态说明</h3>
+<table>
+<thead>
+<tr>
+<th>状态</th>
+<th>颜色</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Active</td>
+<td>绿色</td>
+<td>订阅有效，所有功能正常</td>
+</tr>
+<tr>
+<td>Grace</td>
+<td>橙色</td>
+<td>订阅已过期，处于宽限期，功能受限</td>
+</tr>
+<tr>
+<td>Expired</td>
+<td>红色</td>
+<td>订阅已过期，进入只读模式</td>
+</tr>
+<tr>
+<td>Canceled</td>
+<td>灰色</td>
+<td>订阅已取消</td>
+</tr>
+<tr>
+<td>Refunded</td>
+<td>灰色</td>
+<td>订阅已退款</td>
+</tr>
+</tbody>
+</table>
+<h3>4.4 权益信息</h3>
+<p>权益卡片展示当前订阅包含的权益：</p>
+<ul>
+<li><strong>来源</strong>：权益来源</li>
+<li><strong>产品 ID</strong>：订阅的产品标识</li>
+<li><strong>到期时间</strong>：权益到期时间</li>
+<li><strong>版本系列</strong>：适用的版本系列</li>
+</ul>
+<h3>4.5 刷新订阅</h3>
+<p>点击 <strong>刷新</strong> 按钮，系统会从服务器重新获取最新的订阅数据。</p>
+<h3>4.6 续费提示</h3>
+<p>当订阅状态为 expired、grace 或 canceled 时，页面会显示续费提示信息，并提供 <strong>续费</strong> 按钮。</p>
+<hr>
+<h2>5. 网络连接状态</h2>
+<p>系统会定期与许可服务器同步状态。</p>
+<table>
+<thead>
+<tr>
+<th>字段</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>在线状态</td>
+<td>与许可服务器的连接状态</td>
+</tr>
+<tr>
+<td>最后同步时间</td>
+<td>最近一次成功同步的时间</td>
+</tr>
+<tr>
+<td>连续失败次数</td>
+<td>连续同步失败的次数</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2>6. 设备管理</h2>
+<p>OAuth 模式下，系统通过设备指纹识别不同的设备实例。</p>
+<h3>6.1 设备限制</h3>
+<p>当订阅达到设备数量上限时，登录会返回 <code>device_limit_reached</code> 错误。</p>
+<h3>6.2 管理设备</h3>
+<p>用户可以在用户中心的设备管理页面查看和移除已注册的设备。移除旧设备后，新设备即可正常登录。</p>
+<hr>
+<h2>7. 会话管理</h2>
+<p>登录成功后，系统会颁发 JWT Token，默认有效期为 7200 秒（2 小时）。</p>
+<pre><code class="language-yaml">jwt:
+  expires_in: 7200
+  secret: change-me-in-production
+</code></pre>
+<p>Token 过期后需要重新登录。前端会自动检测 Token 过期并跳转到登录页面。</p>
+<hr>
+<h2>8. 安全建议</h2>
+<ol>
+<li><strong>生产环境修改 JWT Secret</strong>：默认的 <code>change-me-in-production</code> 不安全</li>
+<li><strong>启用 HTTPS</strong>：保护登录凭据在传输过程中的安全</li>
+<li><strong>定期更新密码</strong>：如果使用本地账号认证</li>
+<li><strong>监控设备数量</strong>：及时清理不再使用的设备</li>
+<li><strong>配置合适的 Token 有效期</strong>：根据安全需求调整 <code>expires_in</code></li>
+</ol>
+
+      </article>
+      <div class="page-nav"><a class="prev" href="24-im-bot.html"><span class="nav-label">← 上一篇</span><span class="nav-title">IM 机器人</span></a><a class="next" href="26-license.html"><span class="nav-label">下一篇 →</span><span class="nav-title">许可证管理</span></a></div>
+    </div>
+  </main>
+</div>
+</body>
+</html>

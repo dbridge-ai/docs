@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>语义层 - DBridge 帮助文档</title>
+
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  background: #f5f5f5;
+  color: #262626;
+  line-height: 1.7;
+  font-size: 15px;
+}
+
+.topbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 56px;
+  background: #fff;
+  border-bottom: 1px solid #e8e8e8;
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+  z-index: 100;
+}
+
+.topbar-logo {
+  font-size: 16px;
+  font-weight: 600;
+  color: #262626;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.topbar-logo .logo-icon {
+  width: 28px;
+  height: 28px;
+  background: linear-gradient(135deg, #00b96b, #00d68f);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.topbar-subtitle {
+  font-size: 13px;
+  color: #8c8c8c;
+  margin-left: 12px;
+  padding-left: 12px;
+  border-left: 1px solid #e8e8e8;
+}
+
+.layout {
+  display: flex;
+  margin-top: 56px;
+  min-height: calc(100vh - 56px);
+}
+
+.sidebar {
+  position: fixed;
+  top: 56px;
+  left: 0;
+  width: 260px;
+  height: calc(100vh - 56px);
+  background: #fff;
+  border-right: 1px solid #e8e8e8;
+  overflow-y: auto;
+  padding: 16px 0;
+}
+
+.sidebar::-webkit-scrollbar { width: 4px; }
+.sidebar::-webkit-scrollbar-thumb { background: #d9d9d9; border-radius: 2px; }
+
+.sidebar-section { margin-bottom: 8px; }
+
+.sidebar-section-title {
+  padding: 8px 20px 4px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #8c8c8c;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.sidebar-nav { list-style: none; }
+
+.sidebar-nav li a {
+  display: block;
+  padding: 6px 20px 6px 24px;
+  color: #595959;
+  text-decoration: none;
+  font-size: 14px;
+  line-height: 1.6;
+  transition: all 0.15s;
+  border-left: 3px solid transparent;
+}
+
+.sidebar-nav li a:hover {
+  color: #00b96b;
+  background: #f6ffed;
+}
+
+.sidebar-nav li.active a {
+  color: #00b96b;
+  background: #f6ffed;
+  border-left-color: #00b96b;
+  font-weight: 500;
+}
+
+.main {
+  margin-left: 260px;
+  flex: 1;
+  min-width: 0;
+}
+
+.content-wrapper {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 48px 64px 80px;
+}
+
+.content { background: #fff; padding: 40px 48px; border-radius: 8px; }
+
+.content h1 {
+  font-size: 28px;
+  font-weight: 600;
+  color: #262626;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.content h2 {
+  font-size: 22px;
+  font-weight: 600;
+  color: #262626;
+  margin-top: 40px;
+  margin-bottom: 16px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.content h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #262626;
+  margin-top: 32px;
+  margin-bottom: 12px;
+}
+
+.content h4 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #262626;
+  margin-top: 24px;
+  margin-bottom: 8px;
+}
+
+.content p {
+  margin-bottom: 16px;
+  color: #434343;
+}
+
+.content a {
+  color: #00b96b;
+  text-decoration: none;
+}
+
+.content a:hover { text-decoration: underline; }
+
+.content ul, .content ol {
+  margin-bottom: 16px;
+  padding-left: 24px;
+}
+
+.content li {
+  margin-bottom: 6px;
+  color: #434343;
+}
+
+.content blockquote {
+  margin: 16px 0;
+  padding: 12px 16px;
+  background: #f6ffed;
+  border-left: 4px solid #00b96b;
+  border-radius: 0 4px 4px 0;
+  color: #595959;
+}
+
+.content blockquote p { margin-bottom: 0; }
+
+.content code {
+  background: #f5f5f5;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 13px;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  color: #d4380d;
+}
+
+.content pre {
+  margin: 16px 0;
+  padding: 16px 20px;
+  background: #1e1e1e;
+  border-radius: 8px;
+  overflow-x: auto;
+  line-height: 1.6;
+}
+
+.content pre code {
+  background: none;
+  padding: 0;
+  color: #d4d4d4;
+  font-size: 13px;
+}
+
+.content table {
+  width: 100%;
+  margin: 16px 0;
+  border-collapse: collapse;
+  border: 1px solid #e8e8e8;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.content thead th {
+  background: #fafafa;
+  padding: 10px 14px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 14px;
+  color: #262626;
+  border-bottom: 1px solid #e8e8e8;
+}
+
+.content tbody td {
+  padding: 10px 14px;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 14px;
+  color: #434343;
+}
+
+.content tbody tr:last-child td { border-bottom: none; }
+
+.content tbody tr:nth-child(even) { background: #fafafa; }
+
+.content img {
+  max-width: 100%;
+  border-radius: 6px;
+  margin: 16px 0;
+}
+
+.content hr {
+  border: none;
+  border-top: 1px solid #f0f0f0;
+  margin: 32px 0;
+}
+
+.page-nav {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 48px;
+  padding-top: 24px;
+  border-top: 1px solid #f0f0f0;
+  gap: 16px;
+}
+
+.page-nav a {
+  display: flex;
+  flex-direction: column;
+  padding: 12px 20px;
+  border: 1px solid #e8e8e8;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: all 0.15s;
+  min-width: 0;
+  max-width: 48%;
+}
+
+.page-nav a:hover {
+  border-color: #00b96b;
+  background: #f6ffed;
+  text-decoration: none;
+}
+
+.page-nav .prev { align-items: flex-start; }
+.page-nav .next { align-items: flex-end; margin-left: auto; }
+
+.nav-label {
+  font-size: 12px;
+  color: #8c8c8c;
+  margin-bottom: 4px;
+}
+
+.nav-title {
+  font-size: 14px;
+  color: #00b96b;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+@media (max-width: 768px) {
+  .sidebar { display: none; }
+  .main { margin-left: 0; }
+  .content-wrapper { padding: 24px 16px 60px; }
+  .content h1 { font-size: 24px; }
+  .content h2 { font-size: 20px; }
+}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="topbar-logo">
+    <span class="logo-icon">D</span>
+    <span>DBridge 帮助文档</span>
+  </div>
+  <span class="topbar-subtitle">语义层</span>
+</div>
+<div class="layout">
+  <aside class="sidebar">
+    <div class="sidebar-section"><div class="sidebar-section-title">功能介绍</div><ul class="sidebar-nav"><li><a href="00-preface.html">DBridge Pro 产品概述</a></li><li><a href="01-quick-start.html">快速开始</a></li><li><a href="02-dashboard.html">仪表盘</a></li><li><a href="03-datasource.html">数据源管理</a></li><li><a href="04-sql-editor.html">SQL 编辑器与数据查询</a></li><li><a href="05-database-management.html">数据库管理</a></li><li><a href="06-structure-compare.html">结构对比</a></li><li><a href="07-data-sync.html">数据同步</a></li><li><a href="08-export-import.html">导出与导入</a></li><li><a href="09-sql-transpile.html">SQL 方言转换</a></li><li><a href="10-script-management.html">脚本管理</a></li><li><a href="11-report.html">报表面板</a></li><li><a href="12-ai-assistant.html">AI 助手</a></li><li><a href="13-agent.html">Agent 管理</a></li><li><a href="14-skill.html">Skill 管理</a></li><li><a href="15-mcp-tools.html">MCP 工具</a></li><li><a href="16-ai-provider.html">AI Provider 管理</a></li><li class="active"><a href="17-semantic-layer.html">语义层</a></li><li><a href="18-slow-sql.html">慢 SQL 监控</a></li><li><a href="19-inspection.html">数据库巡检</a></li><li><a href="20-server-management.html">服务器管理</a></li><li><a href="21-audit-log.html">审计日志</a></li><li><a href="22-ai-security.html">AI 安全</a></li><li><a href="23-file-storage.html">文件与存储管理</a></li><li><a href="24-im-bot.html">IM 机器人</a></li><li><a href="25-authentication.html">认证与订阅</a></li><li><a href="26-license.html">许可证管理</a></li><li><a href="27-settings.html">系统设置</a></li><li><a href="28-deployment.html">部署指南</a></li></ul></div><div class="sidebar-section"><div class="sidebar-section-title">技术文档</div><ul class="sidebar-nav"><li><a href="agent-memory-system.html">DBridge Agent 记忆系统详解</a></li><li><a href="semantic-engine-guide.html">DBridge 语义引擎与语义模型</a></li></ul></div>
+  </aside>
+  <main class="main">
+    <div class="content-wrapper">
+      <article class="content">
+        <h1>语义层</h1>
+<p>语义层（Semantic Layer）是连接业务用户与底层数据库的桥梁。它将物理数据库表抽象为业务友好的 Cube（数据模型），通过度量（Measure）和维度（Dimension）定义业务指标体系。</p>
+<blockquote>
+<p>本章介绍语义层的前端使用方式。语义引擎的详细技术文档请参考 <a href="semantic-engine-guide.md">语义引擎指南</a>。</p>
+</blockquote>
+<h2>功能概述</h2>
+<ul>
+<li>Cube 数据模型管理</li>
+<li>度量（Measure）定义</li>
+<li>维度（Dimension）定义</li>
+<li>模型关联（Join）</li>
+<li>指标查询</li>
+<li>AI 辅助生成 Cube</li>
+<li>引擎管理</li>
+</ul>
+<h2>核心概念</h2>
+<h3>Cube（数据模型）</h3>
+<p>Cube 是语义层的基本单元，代表一个业务主题域（如&quot;订单&quot;、“用户”、“产品”）。</p>
+<p>每个 Cube 包含：</p>
+<ul>
+<li>物理表映射 — 对应数据库中的表或自定义 SQL 查询</li>
+<li>度量定义 — 可聚合的业务指标（如订单总额、用户数）</li>
+<li>维度定义 — 分组/过滤属性（如日期、地区、状态）</li>
+<li>关联定义 — 与其他 Cube 的 JOIN 关系</li>
+</ul>
+<h3>Measure（度量）</h3>
+<p>度量是可聚合的业务指标：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">聚合类型</th>
+<th style="text-align:left">说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">sum</td>
+<td style="text-align:left">求和</td>
+</tr>
+<tr>
+<td style="text-align:left">avg</td>
+<td style="text-align:left">平均值</td>
+</tr>
+<tr>
+<td style="text-align:left">min / max</td>
+<td style="text-align:left">最小/最大值</td>
+</tr>
+<tr>
+<td style="text-align:left">count</td>
+<td style="text-align:left">计数</td>
+</tr>
+<tr>
+<td style="text-align:left">count_distinct</td>
+<td style="text-align:left">去重计数</td>
+</tr>
+<tr>
+<td style="text-align:left">number</td>
+<td style="text-align:left">数值（不聚合）</td>
+</tr>
+<tr>
+<td style="text-align:left">running_total</td>
+<td style="text-align:left">累计值</td>
+</tr>
+</tbody>
+</table>
+<h3>Dimension（维度）</h3>
+<p>维度是数据的分组或过滤属性：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">属性</th>
+<th style="text-align:left">说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">名称</td>
+<td style="text-align:left">维度标识</td>
+</tr>
+<tr>
+<td style="text-align:left">显示名</td>
+<td style="text-align:left">业务名称</td>
+</tr>
+<tr>
+<td style="text-align:left">SQL 表达式</td>
+<td style="text-align:left">对应的字段或表达式</td>
+</tr>
+<tr>
+<td style="text-align:left">时间粒度</td>
+<td style="text-align:left">day / week / month / quarter / year</td>
+</tr>
+</tbody>
+</table>
+<h2>Cube 管理</h2>
+<h3>Cube 列表</h3>
+<p>进入「语义层 → Cube 管理」页面，展示所有 Cube：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">列</th>
+<th style="text-align:left">说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">名称</td>
+<td style="text-align:left">Cube 标识名</td>
+</tr>
+<tr>
+<td style="text-align:left">显示名</td>
+<td style="text-align:left">业务显示名称</td>
+</tr>
+<tr>
+<td style="text-align:left">数据源</td>
+<td style="text-align:left">关联的数据源</td>
+</tr>
+<tr>
+<td style="text-align:left">物理表</td>
+<td style="text-align:left">映射的数据库表</td>
+</tr>
+<tr>
+<td style="text-align:left">版本</td>
+<td style="text-align:left">当前版本号</td>
+</tr>
+</tbody>
+</table>
+<h3>创建 Cube</h3>
+<ol>
+<li>点击「新建」按钮</li>
+<li>填写 Cube 信息：</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">字段</th>
+<th style="text-align:left">说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">名称</td>
+<td style="text-align:left">唯一标识（如 <code>orders</code>）</td>
+</tr>
+<tr>
+<td style="text-align:left">显示名</td>
+<td style="text-align:left">业务名称（如 <code>订单</code>）</td>
+</tr>
+<tr>
+<td style="text-align:left">描述</td>
+<td style="text-align:left">业务描述</td>
+</tr>
+<tr>
+<td style="text-align:left">数据源</td>
+<td style="text-align:left">选择数据源</td>
+</tr>
+<tr>
+<td style="text-align:left">数据库</td>
+<td style="text-align:left">选择数据库</td>
+</tr>
+<tr>
+<td style="text-align:left">物理表</td>
+<td style="text-align:left">选择表名</td>
+</tr>
+<tr>
+<td style="text-align:left">或自定义 SQL</td>
+<td style="text-align:left">编写自定义查询</td>
+</tr>
+</tbody>
+</table>
+<ol start="3">
+<li>添加度量（Measures）</li>
+<li>添加维度（Dimensions）</li>
+<li>配置关联（Joins）</li>
+<li>保存</li>
+</ol>
+<h3>AI 生成 Cube</h3>
+<p>系统支持通过 AI 自动生成 Cube 配置：</p>
+<ol>
+<li>点击「AI 生成」按钮</li>
+<li>输入描述，如：“创建一个订单管理的 Cube，包含订单金额、数量等指标”</li>
+<li>AI 自动生成度量、维度定义</li>
+</ol>
+<h2>度量配置</h2>
+<p>在 Cube 编辑页面添加度量：</p>
+<pre><code class="language-json">{
+  &quot;name&quot;: &quot;total_amount&quot;,
+  &quot;display_name&quot;: &quot;订单总额&quot;,
+  &quot;description&quot;: &quot;所有订单的金额总和&quot;,
+  &quot;type&quot;: &quot;sum&quot;,
+  &quot;sql&quot;: &quot;SUM({field})&quot;,
+  &quot;field&quot;: &quot;amount&quot;
+}
+</code></pre>
+<h2>维度配置</h2>
+<p>在 Cube 编辑页面添加维度：</p>
+<pre><code class="language-json">{
+  &quot;name&quot;: &quot;order_date&quot;,
+  &quot;display_name&quot;: &quot;订单日期&quot;,
+  &quot;sql&quot;: &quot;order_date&quot;,
+  &quot;time_granularity&quot;: &quot;day&quot;
+}
+</code></pre>
+<h2>关联配置</h2>
+<p>定义 Cube 之间的 JOIN 关系：</p>
+<pre><code class="language-json">{
+  &quot;name&quot;: &quot;orders_to_users&quot;,
+  &quot;from&quot;: &quot;orders&quot;,
+  &quot;to&quot;: &quot;users&quot;,
+  &quot;type&quot;: &quot;many_to_one&quot;,
+  &quot;on&quot;: &quot;orders.user_id = users.id&quot;
+}
+</code></pre>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">关联类型</th>
+<th style="text-align:left">说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">many_to_one</td>
+<td style="text-align:left">多对一（如多个订单属于一个用户）</td>
+</tr>
+<tr>
+<td style="text-align:left">one_to_many</td>
+<td style="text-align:left">一对多</td>
+</tr>
+<tr>
+<td style="text-align:left">many_to_many</td>
+<td style="text-align:left">多对多</td>
+</tr>
+</tbody>
+</table>
+<h2>指标查询</h2>
+<p>配置好 Cube 后，可以通过语义层 API 进行指标查询：</p>
+<pre><code class="language-json">{
+  &quot;cubes&quot;: [&quot;orders&quot;],
+  &quot;measures&quot;: [&quot;orders.total_amount&quot;],
+  &quot;dimensions&quot;: [&quot;orders.order_date&quot;],
+  &quot;filters&quot;: [
+    {&quot;member&quot;: &quot;orders.order_date&quot;, &quot;operator&quot;: &quot;in_date_range&quot;, &quot;values&quot;: [&quot;last 30 days&quot;]}
+  ],
+  &quot;order&quot;: [[&quot;orders.order_date&quot;, &quot;asc&quot;]]
+}
+</code></pre>
+<p>系统自动将语义查询翻译为 SQL 并执行。</p>
+<h2>引擎管理</h2>
+<p>进入「语义层 → 引擎管理」页面，查看语义层引擎状态：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">信息</th>
+<th style="text-align:left">说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">适配器类型</td>
+<td style="text-align:left">local / cubejs</td>
+</tr>
+<tr>
+<td style="text-align:left">健康状态</td>
+<td style="text-align:left">引擎是否正常运行</td>
+</tr>
+<tr>
+<td style="text-align:left">Cube 数量</td>
+<td style="text-align:left">已配置的 Cube 数</td>
+</tr>
+</tbody>
+</table>
+<h3>适配器</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">适配器</th>
+<th style="text-align:left">说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">local</td>
+<td style="text-align:left">内置引擎，直接查询数据库</td>
+</tr>
+<tr>
+<td style="text-align:left">cubejs</td>
+<td style="text-align:left">对接外部 CubeJS 服务</td>
+</tr>
+</tbody>
+</table>
+<p>配置在 <code>configs/config.yaml</code> 中：</p>
+<pre><code class="language-yaml">semantic:
+  default_adapter: local
+  cubejs:
+    api_url: &quot;&quot;
+    api_token: &quot;&quot;
+</code></pre>
+<h2>使用场景</h2>
+<h3>业务指标平台</h3>
+<p>将复杂的 SQL 聚合逻辑封装为 Cube，业务人员通过简单的指标查询获取数据。</p>
+<h3>AI 数据助手</h3>
+<p>为 AI Agent 提供结构化的业务元数据，使 AI 能准确理解业务数据并生成正确的查询。</p>
+<h3>统一指标口径</h3>
+<p>确保不同报表、不同人查询同一指标时，使用相同的计算逻辑。</p>
+
+      </article>
+      <div class="page-nav"><a class="prev" href="16-ai-provider.html"><span class="nav-label">← 上一篇</span><span class="nav-title">AI Provider 管理</span></a><a class="next" href="18-slow-sql.html"><span class="nav-label">下一篇 →</span><span class="nav-title">慢 SQL 监控</span></a></div>
+    </div>
+  </main>
+</div>
+</body>
+</html>

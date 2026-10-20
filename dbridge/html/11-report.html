@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>报表面板 - DBridge 帮助文档</title>
+
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  background: #f5f5f5;
+  color: #262626;
+  line-height: 1.7;
+  font-size: 15px;
+}
+
+.topbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 56px;
+  background: #fff;
+  border-bottom: 1px solid #e8e8e8;
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+  z-index: 100;
+}
+
+.topbar-logo {
+  font-size: 16px;
+  font-weight: 600;
+  color: #262626;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.topbar-logo .logo-icon {
+  width: 28px;
+  height: 28px;
+  background: linear-gradient(135deg, #00b96b, #00d68f);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.topbar-subtitle {
+  font-size: 13px;
+  color: #8c8c8c;
+  margin-left: 12px;
+  padding-left: 12px;
+  border-left: 1px solid #e8e8e8;
+}
+
+.layout {
+  display: flex;
+  margin-top: 56px;
+  min-height: calc(100vh - 56px);
+}
+
+.sidebar {
+  position: fixed;
+  top: 56px;
+  left: 0;
+  width: 260px;
+  height: calc(100vh - 56px);
+  background: #fff;
+  border-right: 1px solid #e8e8e8;
+  overflow-y: auto;
+  padding: 16px 0;
+}
+
+.sidebar::-webkit-scrollbar { width: 4px; }
+.sidebar::-webkit-scrollbar-thumb { background: #d9d9d9; border-radius: 2px; }
+
+.sidebar-section { margin-bottom: 8px; }
+
+.sidebar-section-title {
+  padding: 8px 20px 4px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #8c8c8c;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.sidebar-nav { list-style: none; }
+
+.sidebar-nav li a {
+  display: block;
+  padding: 6px 20px 6px 24px;
+  color: #595959;
+  text-decoration: none;
+  font-size: 14px;
+  line-height: 1.6;
+  transition: all 0.15s;
+  border-left: 3px solid transparent;
+}
+
+.sidebar-nav li a:hover {
+  color: #00b96b;
+  background: #f6ffed;
+}
+
+.sidebar-nav li.active a {
+  color: #00b96b;
+  background: #f6ffed;
+  border-left-color: #00b96b;
+  font-weight: 500;
+}
+
+.main {
+  margin-left: 260px;
+  flex: 1;
+  min-width: 0;
+}
+
+.content-wrapper {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 48px 64px 80px;
+}
+
+.content { background: #fff; padding: 40px 48px; border-radius: 8px; }
+
+.content h1 {
+  font-size: 28px;
+  font-weight: 600;
+  color: #262626;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.content h2 {
+  font-size: 22px;
+  font-weight: 600;
+  color: #262626;
+  margin-top: 40px;
+  margin-bottom: 16px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.content h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #262626;
+  margin-top: 32px;
+  margin-bottom: 12px;
+}
+
+.content h4 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #262626;
+  margin-top: 24px;
+  margin-bottom: 8px;
+}
+
+.content p {
+  margin-bottom: 16px;
+  color: #434343;
+}
+
+.content a {
+  color: #00b96b;
+  text-decoration: none;
+}
+
+.content a:hover { text-decoration: underline; }
+
+.content ul, .content ol {
+  margin-bottom: 16px;
+  padding-left: 24px;
+}
+
+.content li {
+  margin-bottom: 6px;
+  color: #434343;
+}
+
+.content blockquote {
+  margin: 16px 0;
+  padding: 12px 16px;
+  background: #f6ffed;
+  border-left: 4px solid #00b96b;
+  border-radius: 0 4px 4px 0;
+  color: #595959;
+}
+
+.content blockquote p { margin-bottom: 0; }
+
+.content code {
+  background: #f5f5f5;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 13px;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  color: #d4380d;
+}
+
+.content pre {
+  margin: 16px 0;
+  padding: 16px 20px;
+  background: #1e1e1e;
+  border-radius: 8px;
+  overflow-x: auto;
+  line-height: 1.6;
+}
+
+.content pre code {
+  background: none;
+  padding: 0;
+  color: #d4d4d4;
+  font-size: 13px;
+}
+
+.content table {
+  width: 100%;
+  margin: 16px 0;
+  border-collapse: collapse;
+  border: 1px solid #e8e8e8;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.content thead th {
+  background: #fafafa;
+  padding: 10px 14px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 14px;
+  color: #262626;
+  border-bottom: 1px solid #e8e8e8;
+}
+
+.content tbody td {
+  padding: 10px 14px;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 14px;
+  color: #434343;
+}
+
+.content tbody tr:last-child td { border-bottom: none; }
+
+.content tbody tr:nth-child(even) { background: #fafafa; }
+
+.content img {
+  max-width: 100%;
+  border-radius: 6px;
+  margin: 16px 0;
+}
+
+.content hr {
+  border: none;
+  border-top: 1px solid #f0f0f0;
+  margin: 32px 0;
+}
+
+.page-nav {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 48px;
+  padding-top: 24px;
+  border-top: 1px solid #f0f0f0;
+  gap: 16px;
+}
+
+.page-nav a {
+  display: flex;
+  flex-direction: column;
+  padding: 12px 20px;
+  border: 1px solid #e8e8e8;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: all 0.15s;
+  min-width: 0;
+  max-width: 48%;
+}
+
+.page-nav a:hover {
+  border-color: #00b96b;
+  background: #f6ffed;
+  text-decoration: none;
+}
+
+.page-nav .prev { align-items: flex-start; }
+.page-nav .next { align-items: flex-end; margin-left: auto; }
+
+.nav-label {
+  font-size: 12px;
+  color: #8c8c8c;
+  margin-bottom: 4px;
+}
+
+.nav-title {
+  font-size: 14px;
+  color: #00b96b;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+@media (max-width: 768px) {
+  .sidebar { display: none; }
+  .main { margin-left: 0; }
+  .content-wrapper { padding: 24px 16px 60px; }
+  .content h1 { font-size: 24px; }
+  .content h2 { font-size: 20px; }
+}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="topbar-logo">
+    <span class="logo-icon">D</span>
+    <span>DBridge 帮助文档</span>
+  </div>
+  <span class="topbar-subtitle">报表面板</span>
+</div>
+<div class="layout">
+  <aside class="sidebar">
+    <div class="sidebar-section"><div class="sidebar-section-title">功能介绍</div><ul class="sidebar-nav"><li><a href="00-preface.html">DBridge Pro 产品概述</a></li><li><a href="01-quick-start.html">快速开始</a></li><li><a href="02-dashboard.html">仪表盘</a></li><li><a href="03-datasource.html">数据源管理</a></li><li><a href="04-sql-editor.html">SQL 编辑器与数据查询</a></li><li><a href="05-database-management.html">数据库管理</a></li><li><a href="06-structure-compare.html">结构对比</a></li><li><a href="07-data-sync.html">数据同步</a></li><li><a href="08-export-import.html">导出与导入</a></li><li><a href="09-sql-transpile.html">SQL 方言转换</a></li><li><a href="10-script-management.html">脚本管理</a></li><li class="active"><a href="11-report.html">报表面板</a></li><li><a href="12-ai-assistant.html">AI 助手</a></li><li><a href="13-agent.html">Agent 管理</a></li><li><a href="14-skill.html">Skill 管理</a></li><li><a href="15-mcp-tools.html">MCP 工具</a></li><li><a href="16-ai-provider.html">AI Provider 管理</a></li><li><a href="17-semantic-layer.html">语义层</a></li><li><a href="18-slow-sql.html">慢 SQL 监控</a></li><li><a href="19-inspection.html">数据库巡检</a></li><li><a href="20-server-management.html">服务器管理</a></li><li><a href="21-audit-log.html">审计日志</a></li><li><a href="22-ai-security.html">AI 安全</a></li><li><a href="23-file-storage.html">文件与存储管理</a></li><li><a href="24-im-bot.html">IM 机器人</a></li><li><a href="25-authentication.html">认证与订阅</a></li><li><a href="26-license.html">许可证管理</a></li><li><a href="27-settings.html">系统设置</a></li><li><a href="28-deployment.html">部署指南</a></li></ul></div><div class="sidebar-section"><div class="sidebar-section-title">技术文档</div><ul class="sidebar-nav"><li><a href="agent-memory-system.html">DBridge Agent 记忆系统详解</a></li><li><a href="semantic-engine-guide.html">DBridge 语义引擎与语义模型</a></li></ul></div>
+  </aside>
+  <main class="main">
+    <div class="content-wrapper">
+      <article class="content">
+        <h1>报表面板</h1>
+<p>报表面板提供自定义 SQL 报表功能，支持将查询结果以表格、柱状图、折线图、饼图等多种图表形式展示。</p>
+<h2>功能概述</h2>
+<ul>
+<li>创建自定义 SQL 报表</li>
+<li>多种图表类型支持</li>
+<li>报表分类管理</li>
+<li>AI 辅助生成报表</li>
+<li>报表预览</li>
+<li>缓存配置</li>
+</ul>
+<h2>报表列表</h2>
+<p>进入「报表面板」页面：</p>
+<ul>
+<li><strong>左侧</strong> — 报表分类树</li>
+<li><strong>右侧</strong> — 报表卡片网格</li>
+</ul>
+<h3>分类管理</h3>
+<p>左侧分类树支持以下操作：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">操作</th>
+<th style="text-align:left">说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">新建分类</td>
+<td style="text-align:left">创建新的报表分类</td>
+</tr>
+<tr>
+<td style="text-align:left">编辑名称</td>
+<td style="text-align:left">修改分类名称</td>
+</tr>
+<tr>
+<td style="text-align:left">移动</td>
+<td style="text-align:left">调整分类位置</td>
+</tr>
+<tr>
+<td style="text-align:left">添加子分类</td>
+<td style="text-align:left">创建嵌套分类</td>
+</tr>
+<tr>
+<td style="text-align:left">删除</td>
+<td style="text-align:left">删除分类（需确认）</td>
+</tr>
+</tbody>
+</table>
+<h3>报表卡片</h3>
+<p>每个报表以卡片形式展示，包含：</p>
+<ul>
+<li>报表名称</li>
+<li>描述</li>
+<li>图表预览缩略图</li>
+</ul>
+<h2>创建/编辑报表</h2>
+<h3>基本信息</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">字段</th>
+<th style="text-align:left">说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">名称</td>
+<td style="text-align:left">报表名称</td>
+</tr>
+<tr>
+<td style="text-align:left">描述</td>
+<td style="text-align:left">报表说明</td>
+</tr>
+<tr>
+<td style="text-align:left">数据源</td>
+<td style="text-align:left">选择查询的数据源</td>
+</tr>
+<tr>
+<td style="text-align:left">数据库</td>
+<td style="text-align:left">选择数据库</td>
+</tr>
+<tr>
+<td style="text-align:left">Schema</td>
+<td style="text-align:left">选择 Schema（如适用）</td>
+</tr>
+<tr>
+<td style="text-align:left">分类</td>
+<td style="text-align:left">报表所属分类</td>
+</tr>
+<tr>
+<td style="text-align:left">图表类型</td>
+<td style="text-align:left">展示形式</td>
+</tr>
+<tr>
+<td style="text-align:left">缓存时间</td>
+<td style="text-align:left">查询结果缓存时长（秒）</td>
+</tr>
+<tr>
+<td style="text-align:left">图表配置</td>
+<td style="text-align:left">JSON 格式的图表参数</td>
+</tr>
+</tbody>
+</table>
+<h3>SQL 编辑</h3>
+<p>在 Monaco 编辑器中编写报表查询 SQL：</p>
+<pre><code class="language-sql">SELECT
+    DATE(created_at) AS date,
+    COUNT(*) AS order_count,
+    SUM(amount) AS total_amount
+FROM orders
+WHERE created_at &gt;= DATE_SUB(NOW(), INTERVAL 30 DAY)
+GROUP BY DATE(created_at)
+ORDER BY date
+</code></pre>
+<h3>图表类型</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">类型</th>
+<th style="text-align:left">说明</th>
+<th style="text-align:left">适用场景</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">table</td>
+<td style="text-align:left">数据表格</td>
+<td style="text-align:left">通用数据展示</td>
+</tr>
+<tr>
+<td style="text-align:left">bar</td>
+<td style="text-align:left">柱状图</td>
+<td style="text-align:left">分类对比</td>
+</tr>
+<tr>
+<td style="text-align:left">line</td>
+<td style="text-align:left">折线图</td>
+<td style="text-align:left">趋势变化</td>
+</tr>
+<tr>
+<td style="text-align:left">pie</td>
+<td style="text-align:left">饼图</td>
+<td style="text-align:left">占比分布</td>
+</tr>
+<tr>
+<td style="text-align:left">area</td>
+<td style="text-align:left">面积图</td>
+<td style="text-align:left">累积趋势</td>
+</tr>
+<tr>
+<td style="text-align:left">bar_grouped</td>
+<td style="text-align:left">分组柱状图</td>
+<td style="text-align:left">多系列对比</td>
+</tr>
+<tr>
+<td style="text-align:left">bar_stacked</td>
+<td style="text-align:left">堆叠柱状图</td>
+<td style="text-align:left">组成分析</td>
+</tr>
+<tr>
+<td style="text-align:left">bar_percent</td>
+<td style="text-align:left">百分比柱状图</td>
+<td style="text-align:left">百分比组成</td>
+</tr>
+<tr>
+<td style="text-align:left">area_percent</td>
+<td style="text-align:left">百分比面积图</td>
+<td style="text-align:left">百分比趋势</td>
+</tr>
+<tr>
+<td style="text-align:left">area_basic</td>
+<td style="text-align:left">基础面积图</td>
+<td style="text-align:left">简单趋势</td>
+</tr>
+<tr>
+<td style="text-align:left">line_series</td>
+<td style="text-align:left">多系列折线图</td>
+<td style="text-align:left">多指标趋势</td>
+</tr>
+</tbody>
+</table>
+<h3>图表配置</h3>
+<p>图表配置为 JSON 格式，不同图表类型有不同的配置项。示例：</p>
+<p><strong>折线图配置</strong>：</p>
+<pre><code class="language-json">{
+  &quot;xField&quot;: &quot;date&quot;,
+  &quot;yField&quot;: &quot;total_amount&quot;,
+  &quot;seriesField&quot;: &quot;category&quot;,
+  &quot;title&quot;: &quot;月度销售趋势&quot;
+}
+</code></pre>
+<p><strong>饼图配置</strong>：</p>
+<pre><code class="language-json">{
+  &quot;angleField&quot;: &quot;count&quot;,
+  &quot;colorField&quot;: &quot;status&quot;,
+  &quot;title&quot;: &quot;订单状态分布&quot;
+}
+</code></pre>
+<p>页面提供「图表配置帮助」面板，展示每种图表类型的配置示例。</p>
+<h3>执行预览</h3>
+<p>点击「执行并预览」按钮：</p>
+<ol>
+<li>系统执行 SQL 查询</li>
+<li>根据图表配置渲染图表</li>
+<li>在预览区域展示结果</li>
+</ol>
+<h2>AI 生成报表</h2>
+<p>系统支持通过 AI 自动生成报表：</p>
+<ol>
+<li>在报表编辑页面，找到 AI 生成面板</li>
+<li>输入报表描述，如：“统计最近 30 天每日订单量和销售额”</li>
+<li>AI 自动生成：
+<ul>
+<li>SQL 查询语句</li>
+<li>报表名称</li>
+<li>推荐图表类型</li>
+</ul>
+</li>
+<li>预览确认后保存</li>
+</ol>
+<blockquote>
+<p>AI 生成需要配置 AI Provider。</p>
+</blockquote>
+<h2>报表预览</h2>
+<p>在报表列表中，点击报表卡片的「预览」按钮：</p>
+<ul>
+<li>弹出预览窗口</li>
+<li>渲染图表</li>
+<li>展示数据</li>
+</ul>
+<h2>缓存配置</h2>
+<p>报表支持查询结果缓存，避免频繁执行复杂 SQL：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">配置</th>
+<th style="text-align:left">说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">缓存时间</td>
+<td style="text-align:left">缓存有效期（秒），0 表示不缓存</td>
+</tr>
+<tr>
+<td style="text-align:left">缓存刷新</td>
+<td style="text-align:left">缓存过期后自动重新查询</td>
+</tr>
+</tbody>
+</table>
+<h2>使用场景</h2>
+<h3>业务看板</h3>
+<p>创建关键业务指标的报表：</p>
+<pre><code>📁 业务看板
+  📄 日活用户趋势（折线图）
+  📄 收入分布（饼图）
+  📄 各区域销售对比（柱状图）
+</code></pre>
+<h3>运维监控</h3>
+<p>创建数据库运维相关报表：</p>
+<pre><code>📁 运维监控
+  📄 慢查询统计（表格）
+  📄 表空间使用（柱状图）
+  📄 连接数趋势（折线图）
+</code></pre>
+<h3>数据分析</h3>
+<p>创建数据分析报表：</p>
+<pre><code>📁 数据分析
+  📄 用户增长趋势（面积图）
+  📄 产品销量排行（分组柱状图）
+  📄 渠道转化率（百分比柱状图）
+</code></pre>
+
+      </article>
+      <div class="page-nav"><a class="prev" href="10-script-management.html"><span class="nav-label">← 上一篇</span><span class="nav-title">脚本管理</span></a><a class="next" href="12-ai-assistant.html"><span class="nav-label">下一篇 →</span><span class="nav-title">AI 助手</span></a></div>
+    </div>
+  </main>
+</div>
+</body>
+</html>

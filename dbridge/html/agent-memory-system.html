@@ -1,0 +1,1507 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DBridge Agent 记忆系统详解 - DBridge 帮助文档</title>
+
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  background: #f5f5f5;
+  color: #262626;
+  line-height: 1.7;
+  font-size: 15px;
+}
+
+.topbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 56px;
+  background: #fff;
+  border-bottom: 1px solid #e8e8e8;
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+  z-index: 100;
+}
+
+.topbar-logo {
+  font-size: 16px;
+  font-weight: 600;
+  color: #262626;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.topbar-logo .logo-icon {
+  width: 28px;
+  height: 28px;
+  background: linear-gradient(135deg, #00b96b, #00d68f);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.topbar-subtitle {
+  font-size: 13px;
+  color: #8c8c8c;
+  margin-left: 12px;
+  padding-left: 12px;
+  border-left: 1px solid #e8e8e8;
+}
+
+.layout {
+  display: flex;
+  margin-top: 56px;
+  min-height: calc(100vh - 56px);
+}
+
+.sidebar {
+  position: fixed;
+  top: 56px;
+  left: 0;
+  width: 260px;
+  height: calc(100vh - 56px);
+  background: #fff;
+  border-right: 1px solid #e8e8e8;
+  overflow-y: auto;
+  padding: 16px 0;
+}
+
+.sidebar::-webkit-scrollbar { width: 4px; }
+.sidebar::-webkit-scrollbar-thumb { background: #d9d9d9; border-radius: 2px; }
+
+.sidebar-section { margin-bottom: 8px; }
+
+.sidebar-section-title {
+  padding: 8px 20px 4px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #8c8c8c;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.sidebar-nav { list-style: none; }
+
+.sidebar-nav li a {
+  display: block;
+  padding: 6px 20px 6px 24px;
+  color: #595959;
+  text-decoration: none;
+  font-size: 14px;
+  line-height: 1.6;
+  transition: all 0.15s;
+  border-left: 3px solid transparent;
+}
+
+.sidebar-nav li a:hover {
+  color: #00b96b;
+  background: #f6ffed;
+}
+
+.sidebar-nav li.active a {
+  color: #00b96b;
+  background: #f6ffed;
+  border-left-color: #00b96b;
+  font-weight: 500;
+}
+
+.main {
+  margin-left: 260px;
+  flex: 1;
+  min-width: 0;
+}
+
+.content-wrapper {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 48px 64px 80px;
+}
+
+.content { background: #fff; padding: 40px 48px; border-radius: 8px; }
+
+.content h1 {
+  font-size: 28px;
+  font-weight: 600;
+  color: #262626;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.content h2 {
+  font-size: 22px;
+  font-weight: 600;
+  color: #262626;
+  margin-top: 40px;
+  margin-bottom: 16px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.content h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #262626;
+  margin-top: 32px;
+  margin-bottom: 12px;
+}
+
+.content h4 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #262626;
+  margin-top: 24px;
+  margin-bottom: 8px;
+}
+
+.content p {
+  margin-bottom: 16px;
+  color: #434343;
+}
+
+.content a {
+  color: #00b96b;
+  text-decoration: none;
+}
+
+.content a:hover { text-decoration: underline; }
+
+.content ul, .content ol {
+  margin-bottom: 16px;
+  padding-left: 24px;
+}
+
+.content li {
+  margin-bottom: 6px;
+  color: #434343;
+}
+
+.content blockquote {
+  margin: 16px 0;
+  padding: 12px 16px;
+  background: #f6ffed;
+  border-left: 4px solid #00b96b;
+  border-radius: 0 4px 4px 0;
+  color: #595959;
+}
+
+.content blockquote p { margin-bottom: 0; }
+
+.content code {
+  background: #f5f5f5;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 13px;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  color: #d4380d;
+}
+
+.content pre {
+  margin: 16px 0;
+  padding: 16px 20px;
+  background: #1e1e1e;
+  border-radius: 8px;
+  overflow-x: auto;
+  line-height: 1.6;
+}
+
+.content pre code {
+  background: none;
+  padding: 0;
+  color: #d4d4d4;
+  font-size: 13px;
+}
+
+.content table {
+  width: 100%;
+  margin: 16px 0;
+  border-collapse: collapse;
+  border: 1px solid #e8e8e8;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.content thead th {
+  background: #fafafa;
+  padding: 10px 14px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 14px;
+  color: #262626;
+  border-bottom: 1px solid #e8e8e8;
+}
+
+.content tbody td {
+  padding: 10px 14px;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 14px;
+  color: #434343;
+}
+
+.content tbody tr:last-child td { border-bottom: none; }
+
+.content tbody tr:nth-child(even) { background: #fafafa; }
+
+.content img {
+  max-width: 100%;
+  border-radius: 6px;
+  margin: 16px 0;
+}
+
+.content hr {
+  border: none;
+  border-top: 1px solid #f0f0f0;
+  margin: 32px 0;
+}
+
+.page-nav {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 48px;
+  padding-top: 24px;
+  border-top: 1px solid #f0f0f0;
+  gap: 16px;
+}
+
+.page-nav a {
+  display: flex;
+  flex-direction: column;
+  padding: 12px 20px;
+  border: 1px solid #e8e8e8;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: all 0.15s;
+  min-width: 0;
+  max-width: 48%;
+}
+
+.page-nav a:hover {
+  border-color: #00b96b;
+  background: #f6ffed;
+  text-decoration: none;
+}
+
+.page-nav .prev { align-items: flex-start; }
+.page-nav .next { align-items: flex-end; margin-left: auto; }
+
+.nav-label {
+  font-size: 12px;
+  color: #8c8c8c;
+  margin-bottom: 4px;
+}
+
+.nav-title {
+  font-size: 14px;
+  color: #00b96b;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+@media (max-width: 768px) {
+  .sidebar { display: none; }
+  .main { margin-left: 0; }
+  .content-wrapper { padding: 24px 16px 60px; }
+  .content h1 { font-size: 24px; }
+  .content h2 { font-size: 20px; }
+}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="topbar-logo">
+    <span class="logo-icon">D</span>
+    <span>DBridge 帮助文档</span>
+  </div>
+  <span class="topbar-subtitle">DBridge Agent 记忆系统详解</span>
+</div>
+<div class="layout">
+  <aside class="sidebar">
+    <div class="sidebar-section"><div class="sidebar-section-title">功能介绍</div><ul class="sidebar-nav"><li><a href="00-preface.html">DBridge Pro 产品概述</a></li><li><a href="01-quick-start.html">快速开始</a></li><li><a href="02-dashboard.html">仪表盘</a></li><li><a href="03-datasource.html">数据源管理</a></li><li><a href="04-sql-editor.html">SQL 编辑器与数据查询</a></li><li><a href="05-database-management.html">数据库管理</a></li><li><a href="06-structure-compare.html">结构对比</a></li><li><a href="07-data-sync.html">数据同步</a></li><li><a href="08-export-import.html">导出与导入</a></li><li><a href="09-sql-transpile.html">SQL 方言转换</a></li><li><a href="10-script-management.html">脚本管理</a></li><li><a href="11-report.html">报表面板</a></li><li><a href="12-ai-assistant.html">AI 助手</a></li><li><a href="13-agent.html">Agent 管理</a></li><li><a href="14-skill.html">Skill 管理</a></li><li><a href="15-mcp-tools.html">MCP 工具</a></li><li><a href="16-ai-provider.html">AI Provider 管理</a></li><li><a href="17-semantic-layer.html">语义层</a></li><li><a href="18-slow-sql.html">慢 SQL 监控</a></li><li><a href="19-inspection.html">数据库巡检</a></li><li><a href="20-server-management.html">服务器管理</a></li><li><a href="21-audit-log.html">审计日志</a></li><li><a href="22-ai-security.html">AI 安全</a></li><li><a href="23-file-storage.html">文件与存储管理</a></li><li><a href="24-im-bot.html">IM 机器人</a></li><li><a href="25-authentication.html">认证与订阅</a></li><li><a href="26-license.html">许可证管理</a></li><li><a href="27-settings.html">系统设置</a></li><li><a href="28-deployment.html">部署指南</a></li></ul></div><div class="sidebar-section"><div class="sidebar-section-title">技术文档</div><ul class="sidebar-nav"><li class="active"><a href="agent-memory-system.html">DBridge Agent 记忆系统详解</a></li><li><a href="semantic-engine-guide.html">DBridge 语义引擎与语义模型</a></li></ul></div>
+  </aside>
+  <main class="main">
+    <div class="content-wrapper">
+      <article class="content">
+        <h1>DBridge Agent 记忆系统详解</h1>
+<h2>1. 概述</h2>
+<p>DBridge 的记忆系统为 AI Agent 提供多轮对话上下文管理和用户偏好持久化能力。系统采用三层压缩机制，在有限的上下文窗口内最大化保留有价值的信息，同时通过异步提取机制将关键信息沉淀为长期记忆。</p>
+<p><strong>核心能力</strong>：</p>
+<ul>
+<li>多轮对话历史管理</li>
+<li>会话级上下文压缩（三层机制）</li>
+<li>用户级长期记忆提取与召回</li>
+<li>记忆可观测性与监控</li>
+</ul>
+<hr>
+<h2>2. 架构设计</h2>
+<h3>2.1 核心组件</h3>
+<pre><code>┌─────────────────────────────────────────────────────────┐
+│                    Agent 执行入口                         │
+│              Executor.Execute() / ExecuteStream()        │
+└─────────────────────────────────────────────────────────┘
+                         │
+                         ▼
+              ┌─────────────────────┐
+              │   MemoryManager      │  ← 记忆生命周期管理
+              │  PreRun() / PostRun()│
+              └─────────────────────┘
+                         │
+           ┌─────────────┼─────────────┐
+           ▼             ▼             ▼
+     历史加载        用户记忆召回     压缩决策
+           │             │             │
+           ▼             ▼             ▼
+    ──────────────┐
+    │ MemoryService │  ← 核心记忆服务
+    │               │
+    │ • 三层压缩    │
+    │ • 记忆提取    │
+    │ • 记忆召回    │
+    │ • Token 估算  │
+    └──────────────┘
+           │
+    ┌──────┴──────┐
+    ▼             ▼
+数据库存储      LLM 调用
+(ai_messages,  (压缩/提取)
+ ai_session_memory,
+ settings)
+</code></pre>
+<h3>2.2 关键文件</h3>
+<table>
+<thead>
+<tr>
+<th>文件</th>
+<th>职责</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>internal/service/ai_memory.go</code></td>
+<td><code>MemoryService</code> — 核心记忆服务（压缩、提取、召回）</td>
+</tr>
+<tr>
+<td><code>internal/service/agentexec/memory.go</code></td>
+<td><code>MemoryManager</code> — 执行生命周期钩子（PreRun/PostRun）</td>
+</tr>
+<tr>
+<td><code>internal/service/agentexec/sdk_runner.go</code></td>
+<td><code>sdkRunner</code> — 集成完整记忆的多轮 Runner</td>
+</tr>
+<tr>
+<td><code>internal/service/agentexec/lite_runner.go</code></td>
+<td><code>liteRunner</code> — 无记忆的单轮 Runner</td>
+</tr>
+<tr>
+<td><code>internal/service/agentexec/executor.go</code></td>
+<td><code>Executor</code> — 调用 <code>persistTranscript</code> 触发记忆保存</td>
+</tr>
+<tr>
+<td><code>internal/repository/models.go</code></td>
+<td>数据库模型定义（<code>SessionMemory</code>、<code>Session</code>、<code>Message</code>）</td>
+</tr>
+<tr>
+<td><code>web/src/pages/MemoryMonitor.tsx</code></td>
+<td>前端监控面板</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2>3. 数据库模型</h2>
+<h3>3.1 ai_sessions（会话表）</h3>
+<pre><code class="language-go">type Session struct {
+    ID        string     `gorm:&quot;primaryKey&quot;`
+    UserID    string
+    AgentID   string
+    Title     string
+    ResetAt   *time.Time `gorm:&quot;index&quot;`  // 上下文重置时间点
+    CreatedAt time.Time
+    UpdatedAt time.Time
+}
+</code></pre>
+<p><strong>关键字段</strong>：</p>
+<ul>
+<li><code>ResetAt</code>：执行 <code>/clear</code> 或 <code>/new</code> 命令时设置，历史加载只读取此时间之后的消息</li>
+</ul>
+<h3>3.2 ai_messages（消息表）</h3>
+<pre><code class="language-go">type Message struct {
+    ID          string `gorm:&quot;primaryKey&quot;`
+    SessionID   string `gorm:&quot;index&quot;`
+    Role        string // &quot;user&quot; / &quot;assistant&quot; / &quot;system&quot;
+    Content     string `gorm:&quot;type:text&quot;`
+    SQLContent  string `gorm:&quot;type:text&quot;`  // 执行的 SQL
+    QueryResult string `gorm:&quot;type:text&quot;`  // 查询结果
+    Approval    string `gorm:&quot;type:text&quot;`  // 审批记录
+    CreatedAt   time.Time
+}
+</code></pre>
+<p><strong>存储内容</strong>：</p>
+<ul>
+<li>每轮对话的用户消息和助手回复</li>
+<li>执行的 SQL 语句（如有）</li>
+<li>查询结果摘要（如有）</li>
+<li>审批流程记录（如有）</li>
+</ul>
+<h3>3.3 ai_session_memory（会话压缩表）</h3>
+<pre><code class="language-go">type SessionMemory struct {
+    ID           string    `gorm:&quot;primaryKey&quot;`
+    SessionID    string    `gorm:&quot;uniqueIndex&quot;`
+    Summary      string    `gorm:&quot;type:text&quot;`  // 压缩后的摘要
+    CompressedAt time.Time
+    TokenCount   int
+    MessageCount int
+    LastMsgID    string
+    Status       string    // &quot;pending&quot; / &quot;success&quot; / &quot;failed&quot;
+}
+</code></pre>
+<p><strong>状态机</strong>：</p>
+<ul>
+<li><code>pending</code>：L3 压缩进行中（120 秒 TTL）</li>
+<li><code>success</code>：压缩成功，摘要可用</li>
+<li><code>failed</code>：压缩失败，可重试</li>
+</ul>
+<h3>3.4 settings（用户记忆存储）</h3>
+<p>用户提取的记忆以 JSON 格式存储在 <code>settings</code> 表中：</p>
+<table>
+<thead>
+<tr>
+<th>key</th>
+<th>category</th>
+<th>value 格式</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ai.user_memory.&lt;userID&gt;</code></td>
+<td><code>ai</code></td>
+<td><code>[{&quot;id&quot;,&quot;content&quot;,&quot;category&quot;,&quot;source&quot;,...}]</code></td>
+</tr>
+<tr>
+<td><code>ai.memory.last_extract.&lt;userID&gt;</code></td>
+<td><code>ai</code></td>
+<td>上次提取时间戳（用于限流）</td>
+</tr>
+<tr>
+<td><code>memory.L1.truncation_trigger</code></td>
+<td><code>memory_metrics</code></td>
+<td>计数器（整数）</td>
+</tr>
+<tr>
+<td><code>memory.L2.trigger</code></td>
+<td><code>memory_metrics</code></td>
+<td>计数器</td>
+</tr>
+<tr>
+<td><code>memory.L3.trigger</code></td>
+<td><code>memory_metrics</code></td>
+<td>计数器</td>
+</tr>
+<tr>
+<td><code>memory.L3.success</code></td>
+<td><code>memory_metrics</code></td>
+<td>计数器</td>
+</tr>
+<tr>
+<td><code>memory.L3.failure</code></td>
+<td><code>memory_metrics</code></td>
+<td>计数器</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2>4. Agent 配置与记忆交互</h2>
+<h3>4.1 RunnerType 配置</h3>
+<p>Agent 模型中的 <code>RunnerType</code> 字段控制记忆行为：</p>
+<pre><code class="language-go">type Agent struct {
+    // ...
+    RunnerType string `gorm:&quot;type:varchar(20);default:sdk&quot; json:&quot;runner_type&quot;`
+    // ...
+}
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>RunnerType</th>
+<th>记忆行为</th>
+<th>适用场景</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>&quot;sdk&quot;</code></td>
+<td>完整记忆（历史加载、用户记忆召回、后运行提取）</td>
+<td>多轮对话、复杂任务</td>
+</tr>
+<tr>
+<td><code>&quot;lite&quot;</code></td>
+<td>无记忆（单轮执行，不保存历史）</td>
+<td>简单查询、工具调用</td>
+</tr>
+</tbody>
+</table>
+<h3>4.2 Runner 选择逻辑</h3>
+<p>位置：<code>internal/service/agentexec/executor.go</code> (line 322)</p>
+<pre><code class="language-go">func (e *Executor) selectRunner(req *RunRequest, agent *repository.Agent) AgentRunner {
+    // 规则 1: 有 SessionID 时强制使用 sdkRunner（即使 Agent 配置为 lite）
+    if req.SessionID != &quot;&quot; {
+        return e.sdk
+    }
+    // 规则 2: 无 SessionID 时按 Agent.RunnerType 或显式 Mode 选择
+    if req.Mode == &quot;lite&quot; || agent.RunnerType == &quot;lite&quot; {
+        return e.lite
+    }
+    return e.sdk
+}
+</code></pre>
+<p><strong>关键规则</strong>：</p>
+<ul>
+<li>多轮对话（<code>SessionID</code> 非空）→ 强制 <code>sdkRunner</code></li>
+<li>单轮执行（<code>SessionID</code> 为空）→ 按配置选择</li>
+</ul>
+<h3>4.3 RunResult.Memory 标志</h3>
+<pre><code class="language-go">type RunResult struct {
+    // ...
+    Memory bool `json:&quot;memory&quot;` // 本次执行是否连接会话记忆
+}
+</code></pre>
+<ul>
+<li><code>sdkRunner</code>：<code>res.Memory = req.SessionID != &quot;&quot;</code></li>
+<li><code>liteRunner</code>：始终 <code>res.Memory = false</code></li>
+</ul>
+<hr>
+<h2>5. 三层压缩机制</h2>
+<h3>5.1 L1 — 消息截断（Truncation）</h3>
+<p><strong>触发条件</strong>：单条消息内容超过 2000 字符</p>
+<p><strong>机制</strong>：头尾截断，保留前 1000 字符和后 1000 字符</p>
+<pre><code class="language-go">func (s *MemoryService) TruncateMessage(content string, maxLen int) string {
+    if len(content) &lt;= maxLen {
+        return content
+    }
+    head := content[:1000]
+    tail := content[len(content)-1000:]
+    return head + &quot;\n...[truncated]...\n&quot; + tail
+}
+</code></pre>
+<p><strong>应用场景</strong>：</p>
+<ul>
+<li>历史加载时（<code>loadSessionContext</code>）</li>
+<li>上下文构建时（<code>PromptBuilder.Build</code>）</li>
+</ul>
+<p><strong>监控指标</strong>：<code>memory.L1.truncation_trigger</code>（在 <code>settings</code> 表中）</p>
+<h3>5.2 L2 — 摘要复用（Summary Reuse）</h3>
+<p><strong>触发条件</strong>：会话 Token 估算值超过上下文窗口的 50%</p>
+<p><strong>机制</strong>：</p>
+<ol>
+<li>检查 <code>ai_session_memory</code> 表是否存在 <code>status=success</code> 的摘要</li>
+<li>如存在，直接复用，跳过重新压缩</li>
+<li>摘要作为 <code>system</code> 消息插入历史开头</li>
+</ol>
+<pre><code class="language-go">func (s *MemoryService) CheckAndCompact(ctx context.Context, sessionID string, tokenEstimate int, windowSize int) (*SessionMemory, error) {
+    if tokenEstimate &lt; windowSize/2 {
+        return nil, nil  // 未达阈值
+    }
+    // 查找已有摘要
+    var mem SessionMemory
+    err := s.db.Where(&quot;session_id = ? AND status = ?&quot;, sessionID, &quot;success&quot;).First(&amp;mem).Error
+    if err == nil {
+        return &amp;mem, nil  // 复用成功
+    }
+    return nil, nil
+}
+</code></pre>
+<p><strong>监控指标</strong>：<code>memory.L2.trigger</code></p>
+<h3>5.3 L3 — LLM 全量压缩（Full Compaction）</h3>
+<p><strong>触发条件</strong>：会话 Token 估算值超过上下文窗口的 75%</p>
+<p><strong>机制</strong>：</p>
+<ol>
+<li>异步 goroutine 调用 LLM</li>
+<li>使用结构化提示词（10 个维度）</li>
+<li>摘要除最新 5 条消息外的所有历史</li>
+<li>状态机管理（pending → success/failed）</li>
+<li>120 秒 TTL 防止崩溃后卡死</li>
+</ol>
+<p><strong>压缩提示词</strong>（<code>compactPrompt</code>，ai_memory.go line 506）：</p>
+<pre><code>请对以下对话历史进行结构化摘要，覆盖以下 10 个维度：
+1. 主要请求与意图
+2. 关键决策与结论
+3. 创建/修改的对象（表、字段、配置等）
+4. Schema 变更
+5. 数据操作（INSERT/UPDATE/DELETE）
+6. 错误与解决方案
+7. 待办事项（TODO）
+8. 用户偏好
+9. 工具调用记录
+10. 重要上下文信息
+
+输出格式：JSON
+</code></pre>
+<p><strong>状态机流程</strong>：</p>
+<pre><code>触发 L3
+   │
+   ▼
+创建 SessionMemory (status=pending)
+   │
+   ▼
+异步调用 LLM 压缩
+   │
+   ├─ 成功 → status=success, 保存摘要
+   │
+   └─ 失败 → status=failed, 记录错误
+</code></pre>
+<p><strong>监控指标</strong>：</p>
+<ul>
+<li><code>memory.L3.trigger</code> — L3 触发次数</li>
+<li><code>memory.L3.success</code> — 成功次数</li>
+<li><code>memory.L3.failure</code> — 失败次数</li>
+</ul>
+<hr>
+<h2>6. 用户记忆提取与召回</h2>
+<h3>6.1 提取触发时机</h3>
+<p><strong>位置</strong>：<code>MemoryManager.PostRun()</code> → <code>ExtractMemories()</code></p>
+<p><strong>触发条件</strong>：</p>
+<ol>
+<li><code>result.Memory == true</code>（仅 sdkRunner）</li>
+<li>距上次提取超过 30 秒（限流）</li>
+<li>异步执行，不阻塞主流程</li>
+</ol>
+<pre><code class="language-go">func (m *MemoryManager) PostRun(ctx context.Context, req *RunRequest, result *RunResult) {
+    // 1. 保存用户消息和助手消息到 ai_messages
+    m.saveMessages(req, result)
+
+    // 2. 如果是 sdkRunner 且有 SessionID，触发记忆提取
+    if result.Memory &amp;&amp; req.SessionID != &quot;&quot; {
+        go m.memorySvc.ExtractMemories(ctx, req.UserID, req.SessionID)
+    }
+}
+</code></pre>
+<h3>6.2 提取流程</h3>
+<p>位置：<code>internal/service/ai_memory.go</code> (line 729)</p>
+<pre><code>1. 检查限流（30 秒内不重复提取）
+   │
+   ▼
+2. 加载会话最近 10 条消息
+   │
+   ▼
+3. 调用 LLM 提取记忆
+   提示词: &quot;从以下对话中提取用户偏好、项目信息、数据库知识等...&quot;
+   输出格式: [{&quot;content&quot;: &quot;...&quot;, &quot;category&quot;: &quot;preference|db_info|project|pattern&quot;}]
+   │
+   ▼
+4. 保存到 settings 表
+   - 每用户最多 50 条
+   - 每条最多 1000 字符
+   - 超出时淘汰最旧的
+</code></pre>
+<p><strong>记忆类别</strong>：</p>
+<table>
+<thead>
+<tr>
+<th>Category</th>
+<th>说明</th>
+<th>示例</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>preference</code></td>
+<td>用户偏好</td>
+<td>“用户喜欢简洁的回答风格”</td>
+</tr>
+<tr>
+<td><code>db_info</code></td>
+<td>数据库知识</td>
+<td>“orders 表的 status 字段枚举值：pending/paid/shipped”</td>
+</tr>
+<tr>
+<td><code>project</code></td>
+<td>项目信息</td>
+<td>“项目使用 MySQL 8.0，部署在阿里云”</td>
+</tr>
+<tr>
+<td><code>pattern</code></td>
+<td>行为模式</td>
+<td>“用户通常在周一上午查看销售报表”</td>
+</tr>
+</tbody>
+</table>
+<h3>6.3 召回机制</h3>
+<p>位置：<code>internal/service/ai_memory.go</code> (line 654)</p>
+<p><strong>触发时机</strong>：<code>MemoryManager.PreRun()</code> → <code>recall()</code> → <code>GetUserMemories()</code></p>
+<p><strong>召回流程</strong>：</p>
+<pre><code>1. 从 settings 表加载用户记忆 JSON
+   │
+   ▼
+2. 按 DataSourceID 过滤
+   - 匹配当前数据源的记忆
+   - 全局记忆（DataSourceID 为空）
+   │
+   ▼
+3. 计算每条记忆的得分
+   得分 = 关键词匹配分 + 时间衰减分 + 近期加分
+   │
+   ▼
+4. 返回 Top 3 记忆
+</code></pre>
+<p><strong>评分算法</strong>：</p>
+<pre><code class="language-go">func scoreMemory(item MemoryItem, keywords []string, now time.Time) float64 {
+    score := 0.0
+
+    // 1. 关键词匹配（+50）
+    for _, kw := range keywords {
+        if strings.Contains(strings.ToLower(item.Content), strings.ToLower(kw)) {
+            score += 50
+            break
+        }
+    }
+
+    // 2. 时间衰减（100 * (1 - days/180)）
+    days := now.Sub(item.CreatedAt).Hours() / 24
+    decayScore := 100 * (1 - days/180)
+    if decayScore &lt; 0 {
+        decayScore = 0
+    }
+    score += decayScore
+
+    // 3. 近期加分（30 分钟内 +30）
+    if days &lt; 0.02 {  // 30 分钟
+        score += 30
+    }
+
+    return score
+}
+</code></pre>
+<p><strong>召回示例</strong>：</p>
+<pre><code>用户问: &quot;帮我查一下订单数据&quot;
+关键词: [&quot;订单&quot;, &quot;order&quot;]
+
+记忆库:
+- &quot;用户关注订单表的 amount 和 status 字段&quot; (30 天前, 匹配关键词)
+  得分: 50(匹配) + 83(衰减) = 133
+
+- &quot;orders 表在 MySQL 主库&quot; (10 天前, 无关键词匹配)
+  得分: 0(无匹配) + 94(衰减) = 94
+
+- &quot;用户喜欢按日期分组查看&quot; (20 分钟前, 无关键词匹配)
+  得分: 0(无匹配) + 99(衰减) + 30(近期) = 129
+
+返回 Top 3: [记忆 1, 记忆 3, 记忆 2]
+</code></pre>
+<hr>
+<h2>7. 记忆生命周期</h2>
+<h3>7.1 创建（PreRun）</h3>
+<p>位置：<code>internal/service/agentexec/memory.go</code> (line 40)</p>
+<pre><code class="language-go">func (m *MemoryManager) PreRun(ctx context.Context, req *RunRequest) (*MemoryContext, error) {
+    // 1. 无 SessionID 时跳过
+    if req.SessionID == &quot;&quot; {
+        return &amp;MemoryContext{}, nil
+    }
+
+    // 2. 召回用户记忆
+    memories := m.memorySvc.GetUserMemories(ctx, req.UserID, req.DataSourceID)
+
+    // 3. 加载会话历史（尊重 reset_at 和摘要边界）
+    messages, err := m.loadSessionContext(ctx, req.SessionID)
+
+    // 4. 压缩决策
+    tokenEstimate := estimateTokens(messages)
+    summary, _ := m.memorySvc.CheckAndCompact(ctx, req.SessionID, tokenEstimate, windowSize)
+    m.memorySvc.TriggerL3IfNeeded(ctx, req.SessionID, tokenEstimate, windowSize)
+
+    return &amp;MemoryContext{
+        History:      messages,
+        UserMemories: memories,
+        TokenEstimate: tokenEstimate,
+    }, nil
+}
+</code></pre>
+<h3>7.2 存储（PostRun）</h3>
+<p>位置：<code>internal/service/agentexec/memory.go</code> (line 84)</p>
+<pre><code class="language-go">func (m *MemoryManager) PostRun(ctx context.Context, req *RunRequest, result *RunResult) {
+    // 1. 保存消息到 ai_messages（唯一写入点）
+    m.saveMessages(req, result)
+
+    // 2. 触发异步记忆提取（仅 sdkRunner）
+    if result.Memory &amp;&amp; req.SessionID != &quot;&quot; {
+        go m.memorySvc.ExtractMemories(ctx, req.UserID, req.SessionID)
+    }
+}
+</code></pre>
+<p><strong>调用链</strong>：</p>
+<pre><code>Executor.Execute()
+   │
+   ▼
+runCoreSec()
+   │
+   ▼
+runner.Run()  ← sdkRunner 或 liteRunner
+   │
+   ▼
+Executor.persistTranscript()
+   │
+   ▼
+MemoryManager.PostRun()
+</code></pre>
+<h3>7.3 过期与重置</h3>
+<p><strong>会话重置</strong>（<code>/clear</code> 或 <code>/new</code> 命令）：</p>
+<pre><code class="language-go">func (h *SessionHandler) Reset(c *gin.Context) {
+    sessionID := c.Param(&quot;id&quot;)
+    now := time.Now()
+    db.Model(&amp;Session{}).Where(&quot;id = ?&quot;, sessionID).Update(&quot;reset_at&quot;, now)
+}
+</code></pre>
+<p>效果：</p>
+<ul>
+<li><code>loadSessionContext()</code> 只加载 <code>reset_at</code> 之后的消息</li>
+<li>历史上下文被&quot;清空&quot;（实际数据保留，只是不再加载）</li>
+</ul>
+<p><strong>用户记忆淘汰</strong>：</p>
+<ul>
+<li>无显式过期时间</li>
+<li>时间衰减评分使旧记忆得分降低</li>
+<li>硬上限 50 条，超出时淘汰最旧的</li>
+</ul>
+<hr>
+<h2>8. 观测指标</h2>
+<h3>8.1 指标定义</h3>
+<p>所有指标存储在 <code>settings</code> 表，category 为 <code>memory_metrics</code>：</p>
+<table>
+<thead>
+<tr>
+<th>指标 Key</th>
+<th>含义</th>
+<th>触发时机</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>memory.L1.truncation_trigger</code></td>
+<td>L1 截断触发次数</td>
+<td><code>PromptBuilder.Build()</code> 中截断消息时</td>
+</tr>
+<tr>
+<td><code>memory.L2.trigger</code></td>
+<td>L2 摘要复用触发次数</td>
+<td><code>CheckAndCompact()</code> 检测到 Token &gt; 50% 窗口时</td>
+</tr>
+<tr>
+<td><code>memory.L3.trigger</code></td>
+<td>L3 压缩触发次数</td>
+<td><code>TriggerL3IfNeeded()</code> 检测到 Token &gt; 75% 窗口时</td>
+</tr>
+<tr>
+<td><code>memory.L3.success</code></td>
+<td>L3 压缩成功次数</td>
+<td>L3 goroutine 成功完成时</td>
+</tr>
+<tr>
+<td><code>memory.L3.failure</code></td>
+<td>L3 压缩失败次数</td>
+<td>L3 goroutine 失败时</td>
+</tr>
+</tbody>
+</table>
+<h3>8.2 监控面板</h3>
+<p>位置：<code>web/src/pages/MemoryMonitor.tsx</code></p>
+<p><strong>功能</strong>：</p>
+<ul>
+<li>显示 5 个指标的计数器和摘要卡片</li>
+<li>文档化三层压缩逻辑</li>
+<li>说明可用命令（<code>/clear</code>、<code>/compact</code>、<code>/memory</code>）</li>
+</ul>
+<p><strong>访问路径</strong>：系统管理 → 记忆监控（或直接在 URL 输入 <code>/memory-monitor</code>）</p>
+<h3>8.3 日志输出</h3>
+<p>代码使用 <code>zap.S().Infof</code> 和 <code>zap.S().Errorf</code> 记录关键事件：</p>
+<pre><code>[agentexec] PreRun: loading history for session=xxx
+[agentexec] PreRun: loaded 15 messages for session=xxx
+[agentexec] save user message failed: ...
+[MEMORY] L3 compaction SUCCESS session=xxx, tokens=4500
+[MEMORY] L3 compaction FAILED session=xxx: context window exceeded
+</code></pre>
+<h3>8.4 审计日志</h3>
+<p>位置：<code>internal/service/agentexec/executor.go</code> (line 136)</p>
+<p>每次 Agent 运行记录到 <code>audit_logs</code> 表：</p>
+<pre><code class="language-json">{
+  &quot;module&quot;: &quot;ai&quot;,
+  &quot;operation&quot;: &quot;agent_run&quot;,
+  &quot;details&quot;: {
+    &quot;agent_id&quot;: &quot;agent_xxx&quot;,
+    &quot;session_id&quot;: &quot;session_xxx&quot;,
+    &quot;memory&quot;: true,
+    &quot;runner_used&quot;: &quot;sdk&quot;,
+    &quot;token_estimate&quot;: 3500,
+    &quot;duration_ms&quot;: 1234
+  }
+}
+</code></pre>
+<hr>
+<h2>9. 查看记忆内容</h2>
+<h3>9.1 API 端点</h3>
+<table>
+<thead>
+<tr>
+<th>端点</th>
+<th>方法</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/api/v1/ai-sessions</code></td>
+<td>GET</td>
+<td>列出当前用户的所有会话</td>
+</tr>
+<tr>
+<td><code>/api/v1/ai-sessions/:id</code></td>
+<td>GET</td>
+<td>获取会话详情（含消息）</td>
+</tr>
+<tr>
+<td><code>/api/v1/ai-sessions/:id/messages</code></td>
+<td>POST</td>
+<td>追加消息</td>
+</tr>
+<tr>
+<td><code>/api/v1/ai-sessions/:id/reset</code></td>
+<td>POST</td>
+<td>重置会话上下文（设置 <code>reset_at</code>）</td>
+</tr>
+<tr>
+<td><code>/api/v1/ai-sessions/:id/compact</code></td>
+<td>POST</td>
+<td>手动触发 L3 压缩</td>
+</tr>
+<tr>
+<td><code>/api/v1/memory</code></td>
+<td>GET</td>
+<td>获取当前用户的提取记忆</td>
+</tr>
+</tbody>
+</table>
+<p>路由定义位置：<code>internal/handler/routes.go</code> (lines 339-357)</p>
+<h3>9.2 Bot 命令</h3>
+<p>位置：<code>internal/service/bot_command.go</code></p>
+<table>
+<thead>
+<tr>
+<th>命令</th>
+<th>功能</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/clear</code> 或 <code>/new</code></td>
+<td>重置会话（设置 <code>reset_at</code>，清空上下文）</td>
+</tr>
+<tr>
+<td><code>/compact</code></td>
+<td>手动触发 L3 压缩</td>
+</tr>
+<tr>
+<td><code>/memory</code></td>
+<td>显示所有提取的用户记忆（含类别）</td>
+</tr>
+</tbody>
+</table>
+<h3>9.3 数据库查询</h3>
+<pre><code class="language-sql">-- 1. 查看会话对话历史
+SELECT id, role, LEFT(content, 100) AS content_preview, created_at
+FROM ai_messages
+WHERE session_id = '&lt;session_id&gt;'
+ORDER BY created_at ASC;
+
+-- 2. 查看会话压缩状态
+SELECT session_id, summary, token_count, message_count, status, compressed_at
+FROM ai_session_memory
+WHERE session_id = '&lt;session_id&gt;';
+
+-- 3. 查看用户提取的记忆（JSON 格式）
+SELECT key, LEFT(value, 500) AS memory_preview
+FROM settings
+WHERE key = 'ai.user_memory.&lt;user_id&gt;';
+
+-- 4. 查看记忆指标
+SELECT key, value
+FROM settings
+WHERE category = 'memory_metrics';
+
+-- 5. 查看会话重置状态
+SELECT id, reset_at, created_at, updated_at
+FROM ai_sessions
+WHERE id = '&lt;session_id&gt;';
+
+-- 6. 查看审计日志中的记忆相关信息
+SELECT created_at, details-&gt;&gt;'$.memory' AS memory_enabled,
+       details-&gt;&gt;'$.runner_used' AS runner,
+       details-&gt;&gt;'$.token_estimate' AS tokens
+FROM audit_logs
+WHERE module = 'ai' AND operation = 'agent_run'
+ORDER BY created_at DESC
+LIMIT 20;
+</code></pre>
+<h3>9.4 前端界面</h3>
+<p><strong>MemoryMonitor 页面</strong>（<code>/memory-monitor</code>）：</p>
+<ul>
+<li>显示压缩指标计数器</li>
+<li>展示三层压缩机制说明</li>
+<li>列出可用命令</li>
+</ul>
+<p><strong>ChatPanel 组件</strong>（<code>web/src/components/ChatPanel.tsx</code>）：</p>
+<ul>
+<li>渲染会话消息历史</li>
+<li>显示 SQL 执行结果</li>
+<li>展示审批流程</li>
+</ul>
+<p><strong>AIAssistant 页面</strong>（<code>/ai-assistant</code>）：</p>
+<ul>
+<li>主聊天界面</li>
+<li>会话管理（新建、切换、重置）</li>
+<li>记忆查看（<code>/memory</code> 命令）</li>
+</ul>
+<hr>
+<h2>10. 记忆范围与隔离</h2>
+<table>
+<thead>
+<tr>
+<th>范围</th>
+<th>机制</th>
+<th>存储位置</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>会话级</strong></td>
+<td><code>ai_messages</code> 按 <code>SessionID</code> 隔离</td>
+<td><code>ai_messages</code> 表</td>
+</tr>
+<tr>
+<td><strong>会话级</strong></td>
+<td><code>ai_session_memory</code> 按 <code>SessionID</code> 隔离</td>
+<td><code>ai_session_memory</code> 表</td>
+</tr>
+<tr>
+<td><strong>用户级</strong></td>
+<td>用户记忆按 <code>UserID</code> 隔离</td>
+<td><code>settings</code> 表（key 含 userID）</td>
+</tr>
+<tr>
+<td><strong>数据源级</strong></td>
+<td><code>MemoryItem.DataSourceID</code> 过滤召回</td>
+<td><code>settings</code> 表（JSON 内字段）</td>
+</tr>
+<tr>
+<td><strong>Agent 级</strong></td>
+<td><code>MemoryItem.AgentID</code> 标记来源</td>
+<td><code>settings</code> 表（JSON 内字段）</td>
+</tr>
+</tbody>
+</table>
+<p><strong>隔离规则</strong>：</p>
+<ul>
+<li>会话历史：不同会话完全隔离</li>
+<li>用户记忆：按用户隔离，但可通过 <code>DataSourceID</code> 进一步细分</li>
+<li>跨会话：用户记忆可在不同会话间共享（同一用户）</li>
+</ul>
+<hr>
+<h2>11. 性能与限制</h2>
+<h3>11.1 Token 估算</h3>
+<p>位置：<code>internal/service/ai_memory.go</code></p>
+<pre><code class="language-go">func estimateTokenCount(messages []types.ChatCompletionMessage) int {
+    total := 0
+    for _, msg := range messages {
+        // 粗略估算：1 个中文字符 ≈ 1.5 tokens，1 个英文字符 ≈ 0.25 tokens
+        total += len(msg.Content) * 2 / 3
+    }
+    return total
+}
+</code></pre>
+<h3>11.2 限制参数</h3>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>值</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>L1 截断阈值</td>
+<td>2000 字符</td>
+<td>单条消息超过此值触发截断</td>
+</tr>
+<tr>
+<td>L1 保留长度</td>
+<td>1000 + 1000 字符</td>
+<td>头尾各保留 1000 字符</td>
+</tr>
+<tr>
+<td>L2 触发阈值</td>
+<td>50% 上下文窗口</td>
+<td>Token 估算值超过窗口 50% 时检查摘要</td>
+</tr>
+<tr>
+<td>L3 触发阈值</td>
+<td>75% 上下文窗口</td>
+<td>Token 估算值超过窗口 75% 时触发压缩</td>
+</tr>
+<tr>
+<td>L3 TTL</td>
+<td>120 秒</td>
+<td>pending 状态超时后视为失败</td>
+</tr>
+<tr>
+<td>L3 保留消息数</td>
+<td>5 条</td>
+<td>压缩时保留最新 5 条不压缩</td>
+</tr>
+<tr>
+<td>用户记忆上限</td>
+<td>50 条/用户</td>
+<td>超出时淘汰最旧的</td>
+</tr>
+<tr>
+<td>单条记忆长度</td>
+<td>1000 字符</td>
+<td>提取时截断</td>
+</tr>
+<tr>
+<td>提取限流</td>
+<td>30 秒/用户</td>
+<td>防止频繁调用 LLM</td>
+</tr>
+</tbody>
+</table>
+<h3>11.3 性能优化</h3>
+<ol>
+<li><strong>异步提取</strong>：<code>ExtractMemories()</code> 在 goroutine 中执行，不阻塞主流程</li>
+<li><strong>摘要复用</strong>：L2 机制避免重复压缩</li>
+<li><strong>限流保护</strong>：30 秒提取间隔防止 LLM 调用过载</li>
+<li><strong>索引优化</strong>：<code>ai_messages.session_id</code>、<code>ai_session_memory.session_id</code> 均有索引</li>
+</ol>
+<hr>
+<h2>12. 最佳实践</h2>
+<h3>12.1 Agent 配置建议</h3>
+<table>
+<thead>
+<tr>
+<th>场景</th>
+<th>RunnerType</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>复杂多轮对话</td>
+<td><code>sdk</code></td>
+<td>需要完整记忆和上下文</td>
+</tr>
+<tr>
+<td>简单查询/工具调用</td>
+<td><code>lite</code></td>
+<td>无需记忆，执行更快</td>
+</tr>
+<tr>
+<td>混合场景</td>
+<td><code>sdk</code> + 手动管理 SessionID</td>
+<td>灵活控制</td>
+</tr>
+</tbody>
+</table>
+<h3>12.2 会话管理建议</h3>
+<ol>
+<li><strong>及时重置</strong>：话题切换时使用 <code>/clear</code> 重置上下文</li>
+<li><strong>手动压缩</strong>：长对话中使用 <code>/compact</code> 主动压缩</li>
+<li><strong>定期查看</strong>：使用 <code>/memory</code> 检查提取的记忆是否准确</li>
+</ol>
+<h3>12.3 监控建议</h3>
+<ol>
+<li><strong>关注 L3 失败率</strong>：<code>memory.L3.failure / memory.L3.trigger</code> 应 &lt; 10%</li>
+<li><strong>关注 L1 触发频率</strong>：频繁截断可能意味着消息过长</li>
+<li><strong>定期清理</strong>：删除不再需要的会话，释放存储空间</li>
+</ol>
+<hr>
+<h2>13. 故障排查</h2>
+<h3>13.1 常见问题</h3>
+<table>
+<thead>
+<tr>
+<th>问题</th>
+<th>可能原因</th>
+<th>解决方案</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>记忆未保存</td>
+<td>Agent 配置为 <code>lite</code></td>
+<td>改为 <code>sdk</code> 或确保有 SessionID</td>
+</tr>
+<tr>
+<td>压缩未触发</td>
+<td>Token 估算未达阈值</td>
+<td>检查上下文窗口配置</td>
+</tr>
+<tr>
+<td>L3 压缩失败</td>
+<td>LLM 调用超时或错误</td>
+<td>查看日志，检查 LLM 服务状态</td>
+</tr>
+<tr>
+<td>记忆召回不准确</td>
+<td>评分算法不匹配</td>
+<td>检查关键词和时间衰减</td>
+</tr>
+<tr>
+<td>用户记忆为空</td>
+<td>未达到提取条件</td>
+<td>检查限流和 SessionID</td>
+</tr>
+</tbody>
+</table>
+<h3>13.2 调试方法</h3>
+<ol>
+<li>
+<p><strong>查看日志</strong>：</p>
+<pre><code class="language-bash">tail -f ~/.local/share/dbridge/logs/dbridge.log | grep -i memory
+</code></pre>
+</li>
+<li>
+<p><strong>检查数据库</strong>：</p>
+<pre><code class="language-sql">SELECT * FROM ai_session_memory WHERE session_id = '&lt;session_id&gt;';
+SELECT * FROM settings WHERE key LIKE 'ai.user_memory.%';
+</code></pre>
+</li>
+<li>
+<p><strong>手动触发压缩</strong>：</p>
+<pre><code class="language-bash">curl -X POST http://localhost:8003/api/v1/ai-sessions/&lt;session_id&gt;/compact \
+  -H &quot;Authorization: Bearer &lt;token&gt;&quot;
+</code></pre>
+</li>
+<li>
+<p><strong>查看提取的记忆</strong>：</p>
+<pre><code class="language-bash">curl http://localhost:8003/api/v1/memory \
+  -H &quot;Authorization: Bearer &lt;token&gt;&quot;
+</code></pre>
+</li>
+</ol>
+<hr>
+<h2>14. 完整示例</h2>
+<h3>14.1 多轮对话流程</h3>
+<pre><code>用户: &quot;帮我创建一个订单分析模型&quot;
+   │
+   ▼
+PreRun:
+   - 加载历史（空，首轮）
+   - 召回用户记忆（无）
+   - Token 估算：100
+   │
+   ▼
+LLM 执行 → 生成 Cube 配置
+   │
+   ▼
+PostRun:
+   - 保存消息到 ai_messages
+   - 触发记忆提取（异步）
+   - 提取：&quot;用户正在创建订单分析模型&quot; (category: project)
+   │
+   ▼
+用户: &quot;加上按地区分组的维度&quot;
+   │
+   ▼
+PreRun:
+   - 加载历史（2 条消息）
+   - 召回用户记忆（匹配&quot;订单&quot;关键词）
+   - Token 估算：500
+   │
+   ▼
+LLM 执行 → 更新 Cube 配置（结合历史和记忆）
+   │
+   ▼
+PostRun:
+   - 保存消息
+   - 更新记忆：&quot;用户创建了订单 Cube，包含地区维度&quot;
+</code></pre>
+<h3>14.2 长对话压缩流程</h3>
+<pre><code>对话进行到第 20 轮
+   │
+   ▼
+PreRun:
+   - 加载历史（40 条消息）
+   - Token 估算：8000（窗口 10000 的 80%）
+   │
+   ▼
+L2 检查：
+   - 80% &gt; 50% → 检查摘要
+   - 无现有摘要 → 继续
+   │
+   ▼
+L3 触发：
+   - 80% &gt; 75% → 触发压缩
+   - 创建 SessionMemory (status=pending)
+   - 异步调用 LLM 压缩前 35 条消息
+   │
+   ▼
+压缩完成：
+   - status=success
+   - 摘要：&quot;用户创建了订单 Cube，添加了地区、时间维度，配置了 5 个度量...&quot;
+   │
+   ▼
+下一轮 PreRun:
+   - 加载摘要（作为 system 消息）
+   - 加载最近 5 条消息
+   - Token 估算：2000（大幅下降）
+</code></pre>
+<hr>
+<h2>15. 关键代码位置索引</h2>
+<table>
+<thead>
+<tr>
+<th>组件</th>
+<th>文件路径</th>
+<th>关键行号</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>MemoryService 核心</strong></td>
+<td><code>internal/service/ai_memory.go</code></td>
+<td>全文</td>
+</tr>
+<tr>
+<td>L1 截断</td>
+<td><code>internal/service/ai_memory.go</code></td>
+<td>line 119</td>
+</tr>
+<tr>
+<td>L2 摘要复用</td>
+<td><code>internal/service/ai_memory.go</code></td>
+<td>line 332</td>
+</tr>
+<tr>
+<td>L3 压缩提示词</td>
+<td><code>internal/service/ai_memory.go</code></td>
+<td>line 506</td>
+</tr>
+<tr>
+<td>L3 压缩执行</td>
+<td><code>internal/service/ai_memory.go</code></td>
+<td>line 434</td>
+</tr>
+<tr>
+<td>记忆提取</td>
+<td><code>internal/service/ai_memory.go</code></td>
+<td>line 729</td>
+</tr>
+<tr>
+<td>记忆召回</td>
+<td><code>internal/service/ai_memory.go</code></td>
+<td>line 654</td>
+</tr>
+<tr>
+<td>评分算法</td>
+<td><code>internal/service/ai_memory.go</code></td>
+<td>line 670</td>
+</tr>
+<tr>
+<td><strong>MemoryManager</strong></td>
+<td><code>internal/service/agentexec/memory.go</code></td>
+<td>全文</td>
+</tr>
+<tr>
+<td>PreRun 钩子</td>
+<td><code>internal/service/agentexec/memory.go</code></td>
+<td>line 40</td>
+</tr>
+<tr>
+<td>PostRun 钩子</td>
+<td><code>internal/service/agentexec/memory.go</code></td>
+<td>line 84</td>
+</tr>
+<tr>
+<td><strong>Runner 实现</strong></td>
+<td><code>internal/service/agentexec/sdk_runner.go</code></td>
+<td>全文</td>
+</tr>
+<tr>
+<td>记忆集成</td>
+<td><code>internal/service/agentexec/sdk_runner.go</code></td>
+<td>line 68</td>
+</tr>
+<tr>
+<td><strong>Executor</strong></td>
+<td><code>internal/service/agentexec/executor.go</code></td>
+<td>全文</td>
+</tr>
+<tr>
+<td>Runner 选择</td>
+<td><code>internal/service/agentexec/executor.go</code></td>
+<td>line 322</td>
+</tr>
+<tr>
+<td>Transcript 持久化</td>
+<td><code>internal/service/agentexec/executor.go</code></td>
+<td>line 136</td>
+</tr>
+<tr>
+<td><strong>数据库模型</strong></td>
+<td><code>internal/repository/models.go</code></td>
+<td>全文</td>
+</tr>
+<tr>
+<td>SessionMemory</td>
+<td><code>internal/repository/models.go</code></td>
+<td>line 836</td>
+</tr>
+<tr>
+<td>Session</td>
+<td><code>internal/repository/models.go</code></td>
+<td>line 244</td>
+</tr>
+<tr>
+<td>Message</td>
+<td><code>internal/repository/models.go</code></td>
+<td>line 263</td>
+</tr>
+<tr>
+<td><strong>前端监控</strong></td>
+<td><code>web/src/pages/MemoryMonitor.tsx</code></td>
+<td>全文</td>
+</tr>
+<tr>
+<td><strong>API 路由</strong></td>
+<td><code>internal/handler/routes.go</code></td>
+<td>lines 339-357</td>
+</tr>
+<tr>
+<td><strong>Bot 命令</strong></td>
+<td><code>internal/service/bot_command.go</code></td>
+<td>全文</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<p><strong>文档版本</strong>: 1.0<br>
+<strong>最后更新</strong>: 2026-10-19<br>
+<strong>维护者</strong>: DBridge 开发团队</p>
+
+      </article>
+      <div class="page-nav"><a class="prev" href="28-deployment.html"><span class="nav-label">← 上一篇</span><span class="nav-title">部署指南</span></a><a class="next" href="semantic-engine-guide.html"><span class="nav-label">下一篇 →</span><span class="nav-title">DBridge 语义引擎与语义模型</span></a></div>
+    </div>
+  </main>
+</div>
+</body>
+</html>
